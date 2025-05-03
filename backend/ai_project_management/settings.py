@@ -27,7 +27,7 @@ INSTALLED_APPS = [
     'corsheaders',
 
     # Додатки
-    'ai_assistant',
+    'backend.ai_assistant',
 ]
 
 # Мідлвари
@@ -42,7 +42,7 @@ MIDDLEWARE = [
     'django.middleware.clickjacking.XFrameOptionsMiddleware',
 ]
 
-ROOT_URLCONF = 'ai_project_management.urls'
+ROOT_URLCONF = 'backend.ai_project_management.urls'
 
 # Шаблони
 TEMPLATES = [
