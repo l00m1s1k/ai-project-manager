@@ -42,7 +42,7 @@ MIDDLEWARE = [
     'django.middleware.clickjacking.XFrameOptionsMiddleware',
 ]
 
-ROOT_URLCONF = 'ai_project_management.urls'
+ROOT_URLCONF = 'backend.ai_project_management.urls'
 
 # Шаблони
 TEMPLATES = [
@@ -61,7 +61,7 @@ TEMPLATES = [
     },
 ]
 
-WSGI_APPLICATION = 'ai_project_management.wsgi.application'
+WSGI_APPLICATION = 'backend.ai_project_management.wsgi.application'
 
 # База даних
 DATABASES = {

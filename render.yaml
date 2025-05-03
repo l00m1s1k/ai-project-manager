@@ -4,7 +4,7 @@ services:
     env: python
     plan: free
     buildCommand: "pip install -r requirements.txt"
-    startCommand: "gunicorn ai_project_management.wsgi"
+    startCommand: "gunicorn backend.ai_project_management.wsgi:application"
     envVars:
       - key: DJANGO_SETTINGS_MODULE
         value: ai_project_management.settings
