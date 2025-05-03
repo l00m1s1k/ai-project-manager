@@ -3,5 +3,5 @@ from django.urls import path, include
 
 urlpatterns = [
     path('admin/', admin.site.urls),
-    path('api/', include('ai_assistant.urls')),  # Підключаємо маршрути додатку
+    path('api/', include('backend.ai_assistant.urls')),
 ]
