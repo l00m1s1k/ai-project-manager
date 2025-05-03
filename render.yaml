@@ -1,0 +1,10 @@
+services:
+  - type: web
+    name: ai-backend
+    env: python
+    plan: free
+    buildCommand: pip install -r requirements.txt
+    startCommand: gunicorn ai_project_management.wsgi
+    envVars:
+      - key: DJANGO_SETTINGS_MODULE
+        value: ai_project_management.settings
