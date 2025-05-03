@@ -1,0 +1,37 @@
+.react-calendar {
+  background-color: white;
+  color: black;
+  border: none;
+}
+
+.dark .react-calendar {
+  background-color: #1f2937; /* gray-800 */
+  color: white;
+}
+
+.react-calendar__tile--active {
+  background: #6366f1 !important; /* indigo-500 */
+  color: white !important;
+}
+
+.react-calendar.calendar-styled {
+  width: 100%;
+  max-width: 100%;
+  font-size: 1.1rem;
+  border: none;
+  background: transparent;
+}
+
+.react-calendar__tile {
+  transition: background 0.3s ease;
+  border-radius: 12px !important; /* округлі */
+}
+
+.react-calendar__tile:enabled:hover {
+  background: rgba(99, 102, 241, 0.15); /* індиго з прозорістю */
+  border-radius: 12px !important;
+}
+
+.dark .react-calendar__tile {
+  color: #e5e7eb;
+}
