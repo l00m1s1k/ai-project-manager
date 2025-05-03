@@ -69,20 +69,26 @@ def create_project(request):
 
 # 📌 AI-помічник
 @csrf_exempt
-@require_http_methods(["POST"])
 def ai_help(request):
-    data = json.loads(request.body)
-    task = data.get("task", "")
-    if not task:
-        return JsonResponse({"error": "Запит порожній"}, status=400)
+    if request.method == 'GET':
+        return JsonResponse({"status": "ok"})
 
-    try:
-        response = model.generate_content("Відповідай українською: " + task)
-        answer = response.text.strip()
-        Task.objects.create(title=task, ai_response=answer)
-        return JsonResponse({"response": answer})
-    except Exception as e:
-        return JsonResponse({"error": str(e)}, status=500)
+    if request.method == 'POST':
+        try:
+            data = json.loads(request.body)
+            task = data.get("task", "")
+            if not task:
+                return JsonResponse({"error": "Запит порожній"}, status=400)
+
+            response = model.generate_content(task)
+            answer = response.text.strip()
+
+            Task.objects.create(title=task, ai_response=answer)
+            return JsonResponse({"response": answer})
+        except Exception as e:
+            return JsonResponse({"error": str(e)}, status=500)
+
+    return JsonResponse({"error": "Метод не дозволений"}, status=405)
 
 
 # 📌 Отримання всіх задач
