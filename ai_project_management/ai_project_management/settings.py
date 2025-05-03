@@ -11,7 +11,8 @@ BASE_DIR = Path(__file__).resolve().parent.parent
 # Безпека
 SECRET_KEY = os.getenv("DJANGO_SECRET_KEY", "insecure-default-key")
 DEBUG = os.getenv("DEBUG", "False") == "True"
-ALLOWED_HOSTS = ["*"]  # Під час розробки дозволити все
+ALLOWED_HOSTS = os.getenv("ALLOWED_HOSTS", "*").split(",")
+ # Під час розробки дозволити все
 
 # Додатки
 INSTALLED_APPS = [
