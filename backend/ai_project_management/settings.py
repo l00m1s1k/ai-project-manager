@@ -27,7 +27,7 @@ INSTALLED_APPS = [
     'corsheaders',
 
     # Додатки
-    'ai_assistant',
+    'backend.ai_assistant',
 ]
 
 # Мідлвари
