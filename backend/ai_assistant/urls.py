@@ -10,5 +10,5 @@ urlpatterns = [
     path('', root_check),
 
     # 🔥 Ось це обов'язково:
-    path('api/', include('ai_assistant.urls')),
+    path('api/', include('backend.ai_assistant.urls')),
 ]
