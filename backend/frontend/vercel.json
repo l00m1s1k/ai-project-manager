@@ -1,5 +1,10 @@
 {
+  "build": {
+    "env": {
+      "NODE_ENV": "production"
+    }
+  },
+  "framework": "create-react-app",
   "buildCommand": "npm install --legacy-peer-deps && npm run build",
-  "outputDirectory": "build",
-  "framework": null
+  "outputDirectory": "build"
 }
