@@ -8,5 +8,5 @@ def health_check(request):
 urlpatterns = [
     path('', health_check),
     path('admin/', admin.site.urls),
-    path('api/', include('backend.ai_assistant.urls')),
+    path('api/', include('backend.ai_assistant.urls')),  # залишаємо тільки це
 ]

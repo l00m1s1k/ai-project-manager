@@ -1,14 +1,7 @@
-from django.contrib import admin
-from django.urls import path, include
-from django.http import JsonResponse
-
-def root_check(request):
-    return JsonResponse({'status': 'ok'})
+from django.urls import path
+from .views import ai_help, get_tasks
 
 urlpatterns = [
-    path('admin/', admin.site.urls),
-    path('', root_check),
-
-    # 🔥 Ось це обов'язково:
-    path('api/', include('backend.ai_assistant.urls')),
+    path('ai-help/', ai_help, name='ai_help'),
+    path('tasks/', get_tasks, name='get_tasks'),
 ]
