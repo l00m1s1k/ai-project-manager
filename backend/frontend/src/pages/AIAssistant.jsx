@@ -25,17 +25,25 @@ function AIAssistant() {
   const toggleSidebar = () => setIsSidebarOpen(!isSidebarOpen);
   const closeSidebar = () => setIsSidebarOpen(false);
 
-  const handleSubmit = async () => {
-    const res = await fetch(`${process.env.REACT_APP_API_URL}/api/tasks/`, {
-      method: 'POST',
-      headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify({ task }),
-    });
+  const handleSend = async () => {
+    if (!task.trim()) return;
 
-    const data = await res.json();
-    setResponse(data.response || data.error);
-    setTask('');
-    loadTasks();
+    try {
+      const response = await fetch("https://ai-project-manager-4frq.onrender.com/api/ai-help/", {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json"
+        },
+        body: JSON.stringify({ task })
+      });
+
+      const data = await response.json();
+      setResponse(data.response);  // показати відповідь
+      setTask('');
+      loadTasks();
+    } catch (error) {
+      console.error("Помилка при запиті:", error);
+    }
   };
 
   const handleDelete = async (id) => {
@@ -182,7 +190,7 @@ function AIAssistant() {
           />
 
           <button
-            onClick={handleSubmit}
+            onClick={handleSend}
             className="bg-indigo-600 text-white font-semibold py-2 px-6 rounded-xl hover:bg-indigo-700 transition-all"
           >
             {t('ai.send')}
