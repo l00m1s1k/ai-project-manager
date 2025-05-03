@@ -26,13 +26,13 @@ INSTALLED_APPS = [
     # CORS
     'corsheaders',
 
-    # Твої додатки
-    'ai_assistant',
+    # Додатки
+    'ai_project_management.ai_assistant',
 ]
 
 # Мідлвари
 MIDDLEWARE = [
-    'corsheaders.middleware.CorsMiddleware',                     # обов’язково першим!
+    'corsheaders.middleware.CorsMiddleware',
     'django.middleware.security.SecurityMiddleware',
     'django.contrib.sessions.middleware.SessionMiddleware',
     'django.middleware.common.CommonMiddleware',
