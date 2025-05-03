@@ -61,7 +61,7 @@ TEMPLATES = [
     },
 ]
 
-WSGI_APPLICATION = 'ai_project_management.wsgi.application'
+WSGI_APPLICATION = 'backend.ai_project_management.wsgi.application'
 
 # База даних
 DATABASES = {
