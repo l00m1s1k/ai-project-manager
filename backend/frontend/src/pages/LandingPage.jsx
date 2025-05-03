@@ -20,7 +20,6 @@ function LandingPage() {
         {t('landing.subtitle')}
       </p>
 
-      {/* Головна кнопка */}
       <Link
         to="/assistant"
         className="bg-white text-indigo-700 font-extrabold text-xl py-5 px-12 rounded-2xl shadow-2xl hover:bg-indigo-100 transition mb-10 w-72 text-center"
@@ -28,7 +27,6 @@ function LandingPage() {
         {t('landing.mainButton')}
       </Link>
 
-      {/* Інші кнопки */}
       <div className="flex flex-wrap gap-4 justify-center max-w-2xl">
         <Link
           to="/login"

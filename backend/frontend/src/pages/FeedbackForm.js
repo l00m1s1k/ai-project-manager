@@ -31,7 +31,6 @@ const FeedbackForm = () => {
     <div className="min-h-screen flex items-center justify-center bg-gradient-to-br from-indigo-100 to-white dark:from-gray-900 dark:to-gray-800 text-gray-900 dark:text-white px-4">
       <div className="relative max-w-xl w-full bg-white dark:bg-gray-800 rounded-xl shadow-lg p-8 space-y-6">
 
-        {/* Назад */}
         <button
           onClick={() => navigate(-1)}
           className="absolute top-4 left-4 flex items-center gap-1 text-sm font-medium px-3 py-1.5 rounded-full shadow-sm bg-indigo-100 hover:bg-indigo-200 text-indigo-800 dark:bg-gray-700 dark:text-white dark:hover:bg-gray-600 transition-all duration-200"

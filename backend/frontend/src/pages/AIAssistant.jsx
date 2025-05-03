@@ -26,7 +26,7 @@ function AIAssistant() {
   const closeSidebar = () => setIsSidebarOpen(false);
 
   const handleSubmit = async () => {
-    const res = await fetch('http://127.0.0.1:8001/api/ai-help/', {
+    const res = await fetch(`${process.env.REACT_APP_API_URL}/api/tasks/`, {
       method: 'POST',
       headers: { 'Content-Type': 'application/json' },
       body: JSON.stringify({ task }),
@@ -39,12 +39,14 @@ function AIAssistant() {
   };
 
   const handleDelete = async (id) => {
-    const res = await fetch(`http://127.0.0.1:8001/api/tasks/${id}/delete/`, { method: 'DELETE' });
+    const res = await fetch(`${process.env.REACT_APP_API_URL}/api/tasks/${id}/`, {
+      method: 'DELETE',
+    });
     if (res.ok) loadTasks();
   };
 
   const handleUpdate = async (id) => {
-    const res = await fetch(`http://127.0.0.1:8001/api/tasks/${id}/update/`, {
+    const res = await fetch(`${process.env.REACT_APP_API_URL}/api/tasks/${id}/`, {
       method: 'PATCH',
       headers: { 'Content-Type': 'application/json' },
       body: JSON.stringify({ title: editedTitle }),
@@ -58,9 +60,14 @@ function AIAssistant() {
   };
 
   const loadTasks = async () => {
-    const res = await fetch('http://127.0.0.1:8001/api/tasks/');
-    const data = await res.json();
-    setTasks(data);
+    try {
+      const res = await fetch(`${process.env.REACT_APP_API_URL}/api/tasks/`);
+      if (!res.ok) throw new Error('Не вдалося завантажити задачі');
+      const data = await res.json();
+      setTasks(data);
+    } catch (err) {
+      console.error('Помилка завантаження задач:', err);
+    }
   };
 
   useEffect(() => {

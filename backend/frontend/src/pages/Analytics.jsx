@@ -83,11 +83,10 @@ const Analytics = () => {
   const isOverdue = (p) =>
     p.deadline &&
     new Date(p.deadline) < new Date() &&
-    p.status !== 'Завершено'; // Змінив з t('projects.status.done') на 'Завершено'
+    p.status !== 'Завершено';
 
-  // Оновлений фільтр для успішних проектів
   const successData = groupByDate(
-    (p) => p.status === 'Завершено' && p.completed_at, // Змінив з t('projects.status.done') на 'Завершено'
+    (p) => p.status === 'Завершено' && p.completed_at,
     'completed_at'
   );
   const overdueData = groupByDate(p => isOverdue(p), 'deadline');

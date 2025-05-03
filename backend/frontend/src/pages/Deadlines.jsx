@@ -52,7 +52,6 @@ const Deadlines = () => {
     return 'text-green-400';
   };
 
-  // Фільтруємо проекти: лише ті, що мають дедлайн і не є завершеними
   const activeProjectsWithDeadlines = projects.filter(p =>
     p.deadline && p.status !== 'Завершено'
   );
