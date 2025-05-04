@@ -15,11 +15,10 @@ import google.generativeai as genai
 # Завантаження змінних середовища
 load_dotenv()
 
-# Налаштування Gemini
+# Налаштування Gemini API
 genai.configure(api_key=os.getenv("GEMINI_API_KEY"))
 model = genai.GenerativeModel("gemini-1.5-pro")
 
-# Telegram
 TELEGRAM_TOKEN = os.getenv("TELEGRAM_BOT_TOKEN")
 TELEGRAM_CHAT_ID = os.getenv("TELEGRAM_CHAT_ID")
 
@@ -61,33 +60,35 @@ def create_project(request):
         return JsonResponse({"error": str(e)}, status=500)
 
 @csrf_exempt
-@require_http_methods(["POST"])
 def ai_help(request):
-    try:
-        data = json.loads(request.body)
-        task = data.get("task", "")
-        if not task:
-            return JsonResponse({"error": "Запит порожній"}, status=400)
+    if request.method == 'GET':
+        return JsonResponse({"status": "ok"})
 
-        response = model.generate_content(task)
-        answer = response.text.strip()
+    if request.method == 'POST':
+        try:
+            data = json.loads(request.body)
+            task = data.get("task", "")
+            if not task:
+                return JsonResponse({"error": "Запит порожній"}, status=400)
 
-        # Якщо user автентифікований — зберігаємо
-        if request.user.is_authenticated:
-            Task.objects.create(user=request.user, title=task, ai_response=answer)
-        else:
-            # Інакше — зберігаємо без користувача (або не зберігаємо зовсім)
-            Task.objects.create(title=task, ai_response=answer)
+            response = model.generate_content(task)
+            answer = response.text.strip()
 
-        return JsonResponse({"response": answer})
-    except Exception as e:
-        return JsonResponse({"error": str(e)}, status=500)
+            # Якщо авторизований — зберігаємо
+            if hasattr(request, "user") and request.user.is_authenticated:
+                Task.objects.create(user=request.user, title=task, ai_response=answer)
+
+            return JsonResponse({"response": answer})
+        except Exception as e:
+            return JsonResponse({"error": str(e)}, status=500)
+
+    return JsonResponse({"error": "Метод не дозволений"}, status=405)
 
 @csrf_exempt
 @require_http_methods(["GET"])
 def get_tasks(request):
     if not request.user.is_authenticated:
-        return JsonResponse({"error": "Неавторизований користувач"}, status=401)
+        return JsonResponse([], safe=False)
 
     tasks = Task.objects.filter(user=request.user).order_by('-created_at')
     data = [
