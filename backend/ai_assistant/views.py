@@ -15,7 +15,7 @@ import google.generativeai as genai
 # Завантаження змінних середовища
 load_dotenv()
 
-# Налаштування Gemini API
+# Налаштування API Gemini
 genai.configure(api_key=os.getenv("GEMINI_API_KEY"))
 model = genai.GenerativeModel("gemini-1.5-pro")
 
@@ -30,35 +30,8 @@ def send_telegram_message(text):
     except Exception as e:
         print("Помилка при відправленні Telegram:", e)
 
-@csrf_exempt
-@require_http_methods(["POST"])
-def create_project(request):
-    data = json.loads(request.body)
-    title = data.get("title")
-    status = data.get("status", "У процесі")
-    category = data.get("category", "Інше")
-    progress = data.get("progress", 0)
-    deadline = data.get("deadline")
 
-    if not title:
-        return JsonResponse({"error": "Назва проєкту обов'язкова"}, status=400)
-
-    try:
-        project = Project.objects.create(
-            title=title,
-            status=status,
-            category=category,
-            progress=progress,
-            deadline=deadline
-        )
-        message = f"🆕 Новий проєкт: *{title}*\nКатегорія: {category}\nСтатус: {status}\nПрогрес: {progress}%"
-        if deadline:
-            message += f"\n📅 Дедлайн: {deadline}"
-        send_telegram_message(message)
-        return JsonResponse({"message": "Проєкт створено", "id": project.id})
-    except Exception as e:
-        return JsonResponse({"error": str(e)}, status=500)
-
+# === AI ===
 @csrf_exempt
 def ai_help(request):
     if request.method == 'GET':
@@ -67,16 +40,17 @@ def ai_help(request):
     if request.method == 'POST':
         try:
             data = json.loads(request.body)
-            task = data.get("task", "")
-            if not task:
+            task_text = data.get("task", "")
+            if not task_text:
                 return JsonResponse({"error": "Запит порожній"}, status=400)
 
-            response = model.generate_content(task)
+            response = model.generate_content(task_text)
             answer = response.text.strip()
 
-            # Якщо авторизований — зберігаємо
-            if hasattr(request, "user") and request.user.is_authenticated:
-                Task.objects.create(user=request.user, title=task, ai_response=answer)
+            if request.user.is_authenticated:
+                Task.objects.create(user=request.user, title=task_text, ai_response=answer)
+            else:
+                return JsonResponse({"error": "Неавторизований користувач"}, status=401)
 
             return JsonResponse({"response": answer})
         except Exception as e:
@@ -84,11 +58,13 @@ def ai_help(request):
 
     return JsonResponse({"error": "Метод не дозволений"}, status=405)
 
+
+# === TASKS ===
 @csrf_exempt
 @require_http_methods(["GET"])
 def get_tasks(request):
     if not request.user.is_authenticated:
-        return JsonResponse([], safe=False)
+        return JsonResponse({"error": "Неавторизований користувач"}, status=401)
 
     tasks = Task.objects.filter(user=request.user).order_by('-created_at')
     data = [
@@ -123,6 +99,39 @@ def update_task(request, task_id):
     task.save()
     return JsonResponse({'message': 'Задачу оновлено'})
 
+
+# === PROJECTS ===
+@csrf_exempt
+@require_http_methods(["POST"])
+def create_project(request):
+    data = json.loads(request.body)
+    title = data.get("title")
+    status = data.get("status", "У процесі")
+    category = data.get("category", "Інше")
+    progress = data.get("progress", 0)
+    deadline = data.get("deadline")
+
+    if not title:
+        return JsonResponse({"error": "Назва проєкту обов'язкова"}, status=400)
+
+    try:
+        project = Project.objects.create(
+            title=title,
+            status=status,
+            category=category,
+            progress=progress,
+            deadline=deadline
+        )
+        message = f"🆕 Новий проєкт: *{title}*\nКатегорія: {category}\nСтатус: {status}\nПрогрес: {progress}%"
+        if deadline:
+            message += f"\n📅 Дедлайн: {deadline}"
+        send_telegram_message(message)
+        return JsonResponse({"message": "Проєкт створено", "id": project.id})
+    except Exception as e:
+        return JsonResponse({"error": str(e)}, status=500)
+
+
+# === AUTH ===
 @csrf_exempt
 @require_http_methods(["POST"])
 def register(request):
@@ -130,13 +139,14 @@ def register(request):
     username = data.get("username")
     password = data.get("password")
 
+    if not username or not password:
+        return JsonResponse({"error": "Необхідно вказати логін і пароль"}, status=400)
+
     if User.objects.filter(username=username).exists():
         return JsonResponse({"error": "Користувач вже існує"}, status=400)
 
-    User.objects.create(
-        username=username,
-        password=make_password(password)
-    )
+    user = User.objects.create(username=username, password=make_password(password))
+    login(request, user)
     return JsonResponse({"message": "Реєстрація успішна"})
 
 @csrf_exempt
@@ -145,6 +155,7 @@ def login_user(request):
     data = json.loads(request.body)
     username = data.get("username")
     password = data.get("password")
+
     user = authenticate(request, username=username, password=password)
 
     if user is not None:
