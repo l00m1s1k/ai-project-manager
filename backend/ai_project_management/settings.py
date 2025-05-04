@@ -1,12 +1,11 @@
-
 import os
 from pathlib import Path
 from dotenv import load_dotenv
 
-# Завантаження змінних середовища з .env
+# Завантаження змінних середовища
 load_dotenv()
 
-# Шлях до базової директорії
+# Базова директорія
 BASE_DIR = Path(__file__).resolve().parent.parent
 
 # Безпека
@@ -22,7 +21,11 @@ INSTALLED_APPS = [
     'django.contrib.sessions',
     'django.contrib.messages',
     'django.contrib.staticfiles',
+
+    # CORS
     'corsheaders',
+
+    # Твої додатки
     'backend.ai_assistant',
 ]
 
@@ -40,6 +43,7 @@ MIDDLEWARE = [
 
 ROOT_URLCONF = 'backend.ai_project_management.urls'
 
+# Шаблони
 TEMPLATES = [
     {
         'BACKEND': 'django.template.backends.django.DjangoTemplates',
@@ -58,6 +62,7 @@ TEMPLATES = [
 
 WSGI_APPLICATION = 'backend.ai_project_management.wsgi.application'
 
+# База даних
 DATABASES = {
     'default': {
         'ENGINE': 'django.db.backends.sqlite3',
@@ -65,36 +70,43 @@ DATABASES = {
     }
 }
 
+# Валідація паролів
 AUTH_PASSWORD_VALIDATORS = [
-    {'NAME': 'django.contrib.auth.password_validation.UserAttributeSimilarityValidator'},
-    {'NAME': 'django.contrib.auth.password_validation.MinimumLengthValidator'},
-    {'NAME': 'django.contrib.auth.password_validation.CommonPasswordValidator'},
-    {'NAME': 'django.contrib.auth.password_validation.NumericPasswordValidator'},
+    {
+        'NAME': 'django.contrib.auth.password_validation.UserAttributeSimilarityValidator',
+    },
+    {
+        'NAME': 'django.contrib.auth.password_validation.MinimumLengthValidator',
+    },
+    {
+        'NAME': 'django.contrib.auth.password_validation.CommonPasswordValidator',
+    },
+    {
+        'NAME': 'django.contrib.auth.password_validation.NumericPasswordValidator',
+    },
 ]
 
+# Локалізація
 LANGUAGE_CODE = 'uk'
 TIME_ZONE = 'Europe/Kyiv'
 USE_I18N = True
 USE_TZ = True
 
+# Статичні файли
 STATIC_URL = 'static/'
 STATIC_ROOT = BASE_DIR / 'staticfiles'
 
-# --- CORS та куки ---
+# CORS конфігурація для авторизованого фронтенду
 CORS_ALLOW_CREDENTIALS = True
-
 CORS_ALLOWED_ORIGINS = [
-    "https://ai-project-manager-av3m1xx5z-andrews-projects-e652aa45.vercel.app"
+    "https://ai-project-manager-av3m1xx5z-andrews-projects-e652aa45.vercel.app",
 ]
 
-CSRF_TRUSTED_ORIGINS = [
-    "https://ai-project-manager-av3m1xx5z-andrews-projects-e652aa45.vercel.app"
-]
-
+# Налаштування кукі для сесій
 SESSION_COOKIE_SAMESITE = "None"
 SESSION_COOKIE_SECURE = True
-
 CSRF_COOKIE_SAMESITE = "None"
 CSRF_COOKIE_SECURE = True
 
+# За замовчуванням
 DEFAULT_AUTO_FIELD = 'django.db.models.BigAutoField'

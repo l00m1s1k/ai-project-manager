@@ -1,3 +1,4 @@
+// AIAssistant.jsx
 import React, { useState, useEffect } from 'react';
 import Sidebar from '../components/Sidebar';
 import { Menu } from 'lucide-react';
@@ -12,11 +13,11 @@ function AIAssistant() {
   const [task, setTask] = useState('');
   const [response, setResponse] = useState('');
   const [tasks, setTasks] = useState([]);
+  const [loading, setLoading] = useState(false);
   const [darkMode, setDarkMode] = useState(localStorage.getItem('theme') === 'dark');
   const [editingId, setEditingId] = useState(null);
   const [editedTitle, setEditedTitle] = useState('');
   const [searchQuery, setSearchQuery] = useState('');
-  const [loading, setLoading] = useState(false);
 
   useEffect(() => {
     document.documentElement.classList.toggle('dark', darkMode);
@@ -41,11 +42,16 @@ function AIAssistant() {
       });
 
       const data = await response.json();
-      setResponse(data.response);
-      setTask('');
-      loadTasks();
+      if (response.ok) {
+        setResponse(data.response);
+        setTask('');
+        loadTasks();
+      } else {
+        setResponse(data.error || 'Помилка відповіді від AI');
+      }
     } catch (error) {
       console.error("Помилка при запиті:", error);
+      setResponse('Помилка з’єднання з AI');
     } finally {
       setLoading(false);
     }
@@ -76,7 +82,7 @@ function AIAssistant() {
 
   const loadTasks = async () => {
     try {
-      const res = await fetch("https://ai-project-manager-4frq.onrender.com/api/tasks/", {
+      const res = await fetch(`https://ai-project-manager-4frq.onrender.com/api/tasks/`, {
         credentials: 'include'
       });
       if (!res.ok) throw new Error('Не вдалося завантажити задачі');
@@ -202,8 +208,10 @@ function AIAssistant() {
             onClick={handleSend}
             className="bg-indigo-600 text-white font-semibold py-2 px-6 rounded-xl hover:bg-indigo-700 transition-all"
           >
-            {loading ? 'Обробка...' : t('ai.send')}
+            {t('ai.send')}
           </button>
+
+          {loading && <div className="text-sm text-gray-500">AI думає...</div>}
 
           {response && (
             <div className="bg-indigo-50 dark:bg-indigo-900 border border-indigo-200 dark:border-indigo-700 p-4 rounded-xl shadow-sm">
