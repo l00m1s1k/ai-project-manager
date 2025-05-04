@@ -27,16 +27,16 @@ function AIAssistant() {
   const toggleSidebar = () => setIsSidebarOpen(!isSidebarOpen);
   const closeSidebar = () => setIsSidebarOpen(false);
 
+  const API_URL = 'https://ai-project-manager-4frq.onrender.com'; // оновлюй для іншого бекенду за потреби
+
   const handleSend = async () => {
     if (!task.trim()) return;
     setLoading(true);
 
     try {
-      const response = await fetch("https://ai-project-manager-4frq.onrender.com/api/ai-help/", {
-        method: "POST",
-        headers: {
-          "Content-Type": "application/json"
-        },
+      const response = await fetch(`${API_URL}/api/ai-help/`, {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
         credentials: 'include',
         body: JSON.stringify({ task })
       });
@@ -50,7 +50,7 @@ function AIAssistant() {
         setResponse(data.error || 'Помилка відповіді від AI');
       }
     } catch (error) {
-      console.error("Помилка при запиті:", error);
+      console.error('Помилка при запиті:', error);
       setResponse('Помилка з’єднання з AI');
     } finally {
       setLoading(false);
@@ -58,7 +58,7 @@ function AIAssistant() {
   };
 
   const handleDelete = async (id) => {
-    const res = await fetch(`https://ai-project-manager-4frq.onrender.com/api/tasks/${id}/`, {
+    const res = await fetch(`${API_URL}/api/tasks/${id}/`, {
       method: 'DELETE',
       credentials: 'include'
     });
@@ -66,7 +66,7 @@ function AIAssistant() {
   };
 
   const handleUpdate = async (id) => {
-    const res = await fetch(`https://ai-project-manager-4frq.onrender.com/api/tasks/${id}/`, {
+    const res = await fetch(`${API_URL}/api/tasks/${id}/`, {
       method: 'PATCH',
       headers: { 'Content-Type': 'application/json' },
       credentials: 'include',
@@ -82,7 +82,7 @@ function AIAssistant() {
 
   const loadTasks = async () => {
     try {
-      const res = await fetch(`https://ai-project-manager-4frq.onrender.com/api/tasks/`, {
+      const res = await fetch(`${API_URL}/api/tasks/`, {
         credentials: 'include'
       });
       if (!res.ok) throw new Error('Не вдалося завантажити задачі');
