@@ -1,5 +1,5 @@
-// AIAssistant.jsx
 import React, { useState, useEffect } from 'react';
+import { useNavigate } from 'react-router-dom';
 import Sidebar from '../components/Sidebar';
 import { Menu } from 'lucide-react';
 import { marked } from 'marked';
@@ -8,6 +8,7 @@ import { useTranslation } from 'react-i18next';
 
 function AIAssistant() {
   const { t } = useTranslation();
+  const navigate = useNavigate();
 
   const [isSidebarOpen, setIsSidebarOpen] = useState(false);
   const [task, setTask] = useState('');
@@ -19,6 +20,15 @@ function AIAssistant() {
   const [editingId, setEditingId] = useState(null);
   const [editedTitle, setEditedTitle] = useState('');
   const [searchQuery, setSearchQuery] = useState('');
+
+  // ⛔ Перевірка авторизації при завантаженні сторінки
+  useEffect(() => {
+    fetch('https://ai-project-manager-4frq.onrender.com/api/ai-help/', {
+      credentials: 'include'
+    }).then(res => {
+      if (res.status === 401) navigate('/login');
+    });
+  }, [navigate]);
 
   useEffect(() => {
     document.documentElement.classList.toggle('dark', darkMode);
