@@ -22,7 +22,7 @@ export default function Register() {
       const data = await res.json();
       if (res.ok) {
         setMessage('✅ Реєстрація успішна');
-        setTimeout(() => navigate('/ai'), 500); // Переадресація через 0.5 сек
+        setTimeout(() => navigate('/ai'), 500);
       } else {
         setMessage(data.error || '❌ Помилка');
       }
@@ -54,6 +54,15 @@ export default function Register() {
         <button type="submit" className="w-full bg-indigo-600 hover:bg-indigo-700 text-white font-semibold py-2 rounded-xl transition">
           Зареєструватися
         </button>
+
+        <button
+          type="button"
+          onClick={() => navigate('/')}
+          className="w-full text-indigo-600 hover:text-indigo-800 text-sm underline transition"
+        >
+          ← Назад на головну
+        </button>
+
         {message && <p className="text-center text-sm text-gray-600 dark:text-gray-300">{message}</p>}
       </form>
     </div>
