@@ -92,13 +92,13 @@ STATIC_ROOT = BASE_DIR / 'staticfiles'
 CORS_ALLOW_CREDENTIALS = True
 CORS_ALLOWED_ORIGINS = [
     "https://ai-project-manager-av3m1xx5z-andrews-projects-e652aa45.vercel.app",
-    "https://ai-project-manager-rosy.vercel.app",  # ← інший frontend
+    "https://ai-project-manager-rosy.vercel.app",
 ]
 
 # CSRF конфігурація
 CSRF_TRUSTED_ORIGINS = [
     "https://ai-project-manager-av3m1xx5z-andrews-projects-e652aa45.vercel.app",
-    "https://ai-project-manager-rosy.vercel.app",  # ← інший frontend
+    "https://ai-project-manager-rosy.vercel.app",
 ]
 
 # Кукі
