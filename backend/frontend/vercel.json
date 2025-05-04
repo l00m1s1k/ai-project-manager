@@ -6,5 +6,11 @@
   },
   "framework": "create-react-app",
   "buildCommand": "npm install --legacy-peer-deps && npm run build",
-  "outputDirectory": "build"
+  "outputDirectory": "build",
+  "rewrites": [
+    {
+      "source": "/api/:path*",
+      "destination": "https://ai-project-manager-4frq.onrender.com/api/:path*"
+    }
+  ]
 }
