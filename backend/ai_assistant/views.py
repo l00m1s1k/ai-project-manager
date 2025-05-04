@@ -12,8 +12,10 @@ from django.contrib.auth.hashers import make_password
 from .models import Task, Project
 import google.generativeai as genai
 
+# Завантаження .env
 load_dotenv()
 
+# Налаштування Gemini API
 genai.configure(api_key=os.getenv("GEMINI_API_KEY"))
 model = genai.GenerativeModel("gemini-1.5-pro")
 
@@ -22,14 +24,11 @@ TELEGRAM_CHAT_ID = os.getenv("TELEGRAM_CHAT_ID")
 
 def send_telegram_message(text):
     url = f"https://api.telegram.org/bot{TELEGRAM_TOKEN}/sendMessage"
-    data = {
-        "chat_id": TELEGRAM_CHAT_ID,
-        "text": text
-    }
+    data = { "chat_id": TELEGRAM_CHAT_ID, "text": text }
     try:
         requests.post(url, data=data)
     except Exception as e:
-        print("Помилка при відправленні Telegram:", e)
+        print("Помилка Telegram:", e)
 
 
 @csrf_exempt
@@ -43,7 +42,7 @@ def create_project(request):
     deadline = data.get("deadline")
 
     if not title:
-        return JsonResponse({"error": "Назва проєкту обов'язкова"}, status=400)
+        return JsonResponse({"error": "Назва обов’язкова"}, status=400)
 
     try:
         project = Project.objects.create(
@@ -54,10 +53,10 @@ def create_project(request):
             deadline=deadline
         )
 
-        message = f"🆕 Новий проєкт створено: *{title}*\nКатегорія: {category}\nСтатус: {status}\nПрогрес: {progress}%"
+        msg = f"🆕 Новий проєкт: *{title}*\nКатегорія: {category}\nСтатус: {status}\nПрогрес: {progress}%"
         if deadline:
-            message += f"\n📅 Дедлайн: {deadline}"
-        send_telegram_message(message)
+            msg += f"\n📅 Дедлайн: {deadline}"
+        send_telegram_message(msg)
 
         return JsonResponse({"message": "Проєкт створено", "id": project.id})
     except Exception as e:
@@ -143,10 +142,7 @@ def register(request):
     if User.objects.filter(username=username).exists():
         return JsonResponse({"error": "Користувач вже існує"}, status=400)
 
-    User.objects.create(
-        username=username,
-        password=make_password(password)
-    )
+    User.objects.create(username=username, password=make_password(password))
     return JsonResponse({"message": "Реєстрація успішна"})
 
 
