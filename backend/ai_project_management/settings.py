@@ -72,18 +72,10 @@ DATABASES = {
 
 # Валідація паролів
 AUTH_PASSWORD_VALIDATORS = [
-    {
-        'NAME': 'django.contrib.auth.password_validation.UserAttributeSimilarityValidator',
-    },
-    {
-        'NAME': 'django.contrib.auth.password_validation.MinimumLengthValidator',
-    },
-    {
-        'NAME': 'django.contrib.auth.password_validation.CommonPasswordValidator',
-    },
-    {
-        'NAME': 'django.contrib.auth.password_validation.NumericPasswordValidator',
-    },
+    {'NAME': 'django.contrib.auth.password_validation.UserAttributeSimilarityValidator'},
+    {'NAME': 'django.contrib.auth.password_validation.MinimumLengthValidator'},
+    {'NAME': 'django.contrib.auth.password_validation.CommonPasswordValidator'},
+    {'NAME': 'django.contrib.auth.password_validation.NumericPasswordValidator'},
 ]
 
 # Локалізація
@@ -96,13 +88,20 @@ USE_TZ = True
 STATIC_URL = 'static/'
 STATIC_ROOT = BASE_DIR / 'staticfiles'
 
-# CORS конфігурація для авторизованого фронтенду
+# CORS конфігурація
 CORS_ALLOW_CREDENTIALS = True
 CORS_ALLOWED_ORIGINS = [
     "https://ai-project-manager-av3m1xx5z-andrews-projects-e652aa45.vercel.app",
+    "https://ai-project-manager-rosy.vercel.app",  # ← інший frontend
 ]
 
-# Налаштування кукі для сесій
+# CSRF конфігурація
+CSRF_TRUSTED_ORIGINS = [
+    "https://ai-project-manager-av3m1xx5z-andrews-projects-e652aa45.vercel.app",
+    "https://ai-project-manager-rosy.vercel.app",  # ← інший frontend
+]
+
+# Кукі
 SESSION_COOKIE_SAMESITE = "None"
 SESSION_COOKIE_SECURE = True
 CSRF_COOKIE_SAMESITE = "None"
