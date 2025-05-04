@@ -16,6 +16,7 @@ function AIAssistant() {
   const [editingId, setEditingId] = useState(null);
   const [editedTitle, setEditedTitle] = useState('');
   const [searchQuery, setSearchQuery] = useState('');
+  const [loading, setLoading] = useState(false);
 
   useEffect(() => {
     document.documentElement.classList.toggle('dark', darkMode);
@@ -28,6 +29,9 @@ function AIAssistant() {
   const handleSend = async () => {
     if (!task.trim()) return;
 
+    setLoading(true);
+    setResponse('');
+
     try {
       const response = await fetch("https://ai-project-manager-4frq.onrender.com/api/ai-help/", {
         method: "POST",
@@ -38,11 +42,13 @@ function AIAssistant() {
       });
 
       const data = await response.json();
-      setResponse(data.response);  // показати відповідь
+      setResponse(data.response);
       setTask('');
       loadTasks();
     } catch (error) {
       console.error("Помилка при запиті:", error);
+    } finally {
+      setLoading(false);
     }
   };
 
@@ -191,10 +197,17 @@ function AIAssistant() {
 
           <button
             onClick={handleSend}
-            className="bg-indigo-600 text-white font-semibold py-2 px-6 rounded-xl hover:bg-indigo-700 transition-all"
+            className="bg-indigo-600 text-white font-semibold py-2 px-6 rounded-xl hover:bg-indigo-700 transition-all disabled:opacity-50"
+            disabled={loading}
           >
-            {t('ai.send')}
+            {loading ? t('ai.thinking') || 'Генерація...' : t('ai.send')}
           </button>
+
+          {loading && (
+            <div className="text-center text-indigo-600 dark:text-indigo-300 animate-pulse">
+              ⏳ {t('ai.thinking') || 'AI думає...'}
+            </div>
+          )}
 
           {response && (
             <div className="bg-indigo-50 dark:bg-indigo-900 border border-indigo-200 dark:border-indigo-700 p-4 rounded-xl shadow-sm">
