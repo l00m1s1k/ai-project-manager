@@ -14,6 +14,7 @@ function AIAssistant() {
   const [response, setResponse] = useState('');
   const [tasks, setTasks] = useState([]);
   const [loading, setLoading] = useState(false);
+  const [error, setError] = useState('');
   const [darkMode, setDarkMode] = useState(localStorage.getItem('theme') === 'dark');
   const [editingId, setEditingId] = useState(null);
   const [editedTitle, setEditedTitle] = useState('');
@@ -27,65 +28,73 @@ function AIAssistant() {
   const toggleSidebar = () => setIsSidebarOpen(!isSidebarOpen);
   const closeSidebar = () => setIsSidebarOpen(false);
 
-  const API_URL = 'https://ai-project-manager-4frq.onrender.com'; // оновлюй для іншого бекенду за потреби
-
   const handleSend = async () => {
     if (!task.trim()) return;
     setLoading(true);
+    setError('');
 
     try {
-      const response = await fetch(`${API_URL}/api/ai-help/`, {
+      const res = await fetch('https://ai-project-manager-4frq.onrender.com/api/ai-help/', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         credentials: 'include',
         body: JSON.stringify({ task })
       });
 
-      const data = await response.json();
-      if (response.ok) {
+      const data = await res.json();
+
+      if (res.status === 401) {
+        setError('⛔ Ви не авторизовані. Увійдіть, щоб отримати відповідь від AI.');
+        setResponse('');
+        return;
+      }
+
+      if (res.ok) {
         setResponse(data.response);
         setTask('');
         loadTasks();
       } else {
         setResponse(data.error || 'Помилка відповіді від AI');
       }
-    } catch (error) {
-      console.error('Помилка при запиті:', error);
-      setResponse('Помилка з’єднання з AI');
+    } catch (err) {
+      console.error('AI error:', err);
+      setResponse('❌ Помилка з’єднання з AI');
     } finally {
       setLoading(false);
     }
   };
 
   const handleDelete = async (id) => {
-    const res = await fetch(`${API_URL}/api/tasks/${id}/`, {
+    await fetch(`https://ai-project-manager-4frq.onrender.com/api/tasks/${id}/`, {
       method: 'DELETE',
       credentials: 'include'
     });
-    if (res.ok) loadTasks();
+    loadTasks();
   };
 
   const handleUpdate = async (id) => {
-    const res = await fetch(`${API_URL}/api/tasks/${id}/`, {
+    await fetch(`https://ai-project-manager-4frq.onrender.com/api/tasks/${id}/`, {
       method: 'PATCH',
       headers: { 'Content-Type': 'application/json' },
       credentials: 'include',
-      body: JSON.stringify({ title: editedTitle }),
+      body: JSON.stringify({ title: editedTitle })
     });
-
-    if (res.ok) {
-      setEditingId(null);
-      setEditedTitle('');
-      loadTasks();
-    }
+    setEditingId(null);
+    setEditedTitle('');
+    loadTasks();
   };
 
   const loadTasks = async () => {
     try {
-      const res = await fetch(`${API_URL}/api/tasks/`, {
+      const res = await fetch('https://ai-project-manager-4frq.onrender.com/api/tasks/', {
         credentials: 'include'
       });
-      if (!res.ok) throw new Error('Не вдалося завантажити задачі');
+
+      if (res.status === 401) {
+        setTasks([]);
+        return;
+      }
+
       const data = await res.json();
       setTasks(data);
     } catch (err) {
@@ -101,16 +110,12 @@ function AIAssistant() {
     const today = new Date().toISOString().slice(0, 10);
     const yesterday = new Date(Date.now() - 86400000).toISOString().slice(0, 10);
 
-    const grouped = { today: [], yesterday: [], older: [] };
-
-    tasks.forEach((task) => {
-      const taskDate = task.created_at.slice(0, 10);
-      if (taskDate === today) grouped.today.push(task);
-      else if (taskDate === yesterday) grouped.yesterday.push(task);
-      else grouped.older.push(task);
-    });
-
-    return grouped;
+    return {
+      today: tasks.filter(task => task.created_at.slice(0, 10) === today),
+      yesterday: tasks.filter(task => task.created_at.slice(0, 10) === yesterday),
+      older: tasks.filter(task =>
+        task.created_at.slice(0, 10) !== today && task.created_at.slice(0, 10) !== yesterday)
+    };
   };
 
   const renderGroup = (label, list) => (
@@ -212,6 +217,7 @@ function AIAssistant() {
           </button>
 
           {loading && <div className="text-sm text-gray-500">AI думає...</div>}
+          {error && <div className="text-sm text-red-500">{error}</div>}
 
           {response && (
             <div className="bg-indigo-50 dark:bg-indigo-900 border border-indigo-200 dark:border-indigo-700 p-4 rounded-xl shadow-sm">
