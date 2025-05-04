@@ -28,9 +28,7 @@ function AIAssistant() {
 
   const handleSend = async () => {
     if (!task.trim()) return;
-
     setLoading(true);
-    setResponse('');
 
     try {
       const response = await fetch("https://ai-project-manager-4frq.onrender.com/api/ai-help/", {
@@ -38,6 +36,7 @@ function AIAssistant() {
         headers: {
           "Content-Type": "application/json"
         },
+        credentials: 'include',
         body: JSON.stringify({ task })
       });
 
@@ -53,16 +52,18 @@ function AIAssistant() {
   };
 
   const handleDelete = async (id) => {
-    const res = await fetch(`${process.env.REACT_APP_API_URL}/api/tasks/${id}/`, {
+    const res = await fetch(`https://ai-project-manager-4frq.onrender.com/api/tasks/${id}/`, {
       method: 'DELETE',
+      credentials: 'include'
     });
     if (res.ok) loadTasks();
   };
 
   const handleUpdate = async (id) => {
-    const res = await fetch(`${process.env.REACT_APP_API_URL}/api/tasks/${id}/`, {
+    const res = await fetch(`https://ai-project-manager-4frq.onrender.com/api/tasks/${id}/`, {
       method: 'PATCH',
       headers: { 'Content-Type': 'application/json' },
+      credentials: 'include',
       body: JSON.stringify({ title: editedTitle }),
     });
 
@@ -75,7 +76,9 @@ function AIAssistant() {
 
   const loadTasks = async () => {
     try {
-      const res = await fetch(`${process.env.REACT_APP_API_URL}/api/tasks/`);
+      const res = await fetch("https://ai-project-manager-4frq.onrender.com/api/tasks/", {
+        credentials: 'include'
+      });
       if (!res.ok) throw new Error('Не вдалося завантажити задачі');
       const data = await res.json();
       setTasks(data);
@@ -197,17 +200,10 @@ function AIAssistant() {
 
           <button
             onClick={handleSend}
-            className="bg-indigo-600 text-white font-semibold py-2 px-6 rounded-xl hover:bg-indigo-700 transition-all disabled:opacity-50"
-            disabled={loading}
+            className="bg-indigo-600 text-white font-semibold py-2 px-6 rounded-xl hover:bg-indigo-700 transition-all"
           >
-            {loading ? t('ai.thinking') || 'Генерація...' : t('ai.send')}
+            {loading ? 'Обробка...' : t('ai.send')}
           </button>
-
-          {loading && (
-            <div className="text-center text-indigo-600 dark:text-indigo-300 animate-pulse">
-              ⏳ {t('ai.thinking') || 'AI думає...'}
-            </div>
-          )}
 
           {response && (
             <div className="bg-indigo-50 dark:bg-indigo-900 border border-indigo-200 dark:border-indigo-700 p-4 rounded-xl shadow-sm">
