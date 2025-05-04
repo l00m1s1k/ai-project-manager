@@ -12,10 +12,8 @@ from django.contrib.auth.hashers import make_password
 from .models import Task, Project
 import google.generativeai as genai
 
-# Завантаження змінних середовища
 load_dotenv()
 
-# Налаштування Gemini API
 genai.configure(api_key=os.getenv("GEMINI_API_KEY"))
 model = genai.GenerativeModel("gemini-1.5-pro")
 
@@ -34,7 +32,6 @@ def send_telegram_message(text):
         print("Помилка при відправленні Telegram:", e)
 
 
-# 📌 Створення нового проєкту
 @csrf_exempt
 @require_http_methods(["POST"])
 def create_project(request):
@@ -43,7 +40,7 @@ def create_project(request):
     status = data.get("status", "У процесі")
     category = data.get("category", "Інше")
     progress = data.get("progress", 0)
-    deadline = data.get("deadline")  # ISO format: '2025-04-10T14:00:00'
+    deadline = data.get("deadline")
 
     if not title:
         return JsonResponse({"error": "Назва проєкту обов'язкова"}, status=400)
@@ -67,13 +64,15 @@ def create_project(request):
         return JsonResponse({"error": str(e)}, status=500)
 
 
-# 📌 AI-помічник
 @csrf_exempt
 def ai_help(request):
     if request.method == 'GET':
         return JsonResponse({"status": "ok"})
 
     if request.method == 'POST':
+        if not request.user.is_authenticated:
+            return JsonResponse({"error": "Неавторизований користувач"}, status=401)
+
         try:
             data = json.loads(request.body)
             task = data.get("task", "")
@@ -83,7 +82,7 @@ def ai_help(request):
             response = model.generate_content(task)
             answer = response.text.strip()
 
-            Task.objects.create(title=task, ai_response=answer)
+            Task.objects.create(user=request.user, title=task, ai_response=answer)
             return JsonResponse({"response": answer})
         except Exception as e:
             return JsonResponse({"error": str(e)}, status=500)
@@ -91,11 +90,13 @@ def ai_help(request):
     return JsonResponse({"error": "Метод не дозволений"}, status=405)
 
 
-# 📌 Отримання всіх задач
 @csrf_exempt
 @require_http_methods(["GET"])
 def get_tasks(request):
-    tasks = Task.objects.all().order_by('-created_at')
+    if not request.user.is_authenticated:
+        return JsonResponse({"error": "Неавторизований користувач"}, status=401)
+
+    tasks = Task.objects.filter(user=request.user).order_by('-created_at')
     data = [
         {
             "id": task.id,
@@ -108,28 +109,30 @@ def get_tasks(request):
     return JsonResponse(data, safe=False)
 
 
-# 📌 Видалення задачі
 @csrf_exempt
 @require_http_methods(["DELETE"])
 def delete_task(request, task_id):
-    task = get_object_or_404(Task, id=task_id)
+    if not request.user.is_authenticated:
+        return JsonResponse({"error": "Неавторизований користувач"}, status=401)
+
+    task = get_object_or_404(Task, id=task_id, user=request.user)
     task.delete()
     return JsonResponse({'message': 'Задачу видалено'})
 
 
-# 📌 Оновлення задачі
 @csrf_exempt
 @require_http_methods(["PATCH"])
 def update_task(request, task_id):
-    task = get_object_or_404(Task, id=task_id)
+    if not request.user.is_authenticated:
+        return JsonResponse({"error": "Неавторизований користувач"}, status=401)
+
+    task = get_object_or_404(Task, id=task_id, user=request.user)
     data = json.loads(request.body)
-    new_title = data.get('title', task.title)
-    task.title = new_title
+    task.title = data.get('title', task.title)
     task.save()
     return JsonResponse({'message': 'Задачу оновлено'})
 
 
-# 👤 Реєстрація користувача
 @csrf_exempt
 @require_http_methods(["POST"])
 def register(request):
@@ -147,7 +150,6 @@ def register(request):
     return JsonResponse({"message": "Реєстрація успішна"})
 
 
-# 🔐 Вхід користувача
 @csrf_exempt
 @require_http_methods(["POST"])
 def login_user(request):
@@ -163,7 +165,6 @@ def login_user(request):
         return JsonResponse({"error": "Невірні дані"}, status=401)
 
 
-# 🚪 Вихід користувача
 @csrf_exempt
 @require_http_methods(["POST"])
 def logout_user(request):
