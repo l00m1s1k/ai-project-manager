@@ -35,16 +35,16 @@ const Register = () => {
 
       if (!response.ok) {
         const message = JSON.stringify(data).toLowerCase();
-        if (message.includes('already exists')) {
+        if (message.includes('exists') || message.includes('username')) {
           setDuplicateUser(true);
         } else {
           setError(data?.error || 'Не вдалося зареєструватися. Спробуйте ще раз.');
         }
-        return;
+        return; // ⛔ Зупиняємо навігацію
       }
 
       localStorage.setItem('user_login', data.username || login);
-      navigate('/ai');
+      navigate('/ai'); // ✅ Перехід лише при успіху
     } catch (error) {
       console.error(error);
       setError('Помилка зʼєднання з сервером.');
