@@ -1,67 +1,77 @@
 import React, { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
-import BackButton from '../components/BackButton';
+import { ArrowLeft } from 'lucide-react';
 
-export default function Login() {
-  const [form, setForm] = useState({ username: '', password: '' });
-  const [message, setMessage] = useState('');
+const Login = () => {
+  const [login, setLogin] = useState('');
+  const [password, setPassword] = useState('');
+  const [error, setError] = useState('');
   const navigate = useNavigate();
-
-  const handleChange = (e) => {
-    setForm({ ...form, [e.target.name]: e.target.value });
-  };
 
   const handleSubmit = async (e) => {
     e.preventDefault();
     try {
-      const res = await fetch('https://ai-project-manager-4frq.onrender.com/api/login/', {
+      const response = await fetch('https://ai-project-manager-4frq.onrender.com/api/login/', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify(form),
-        credentials: 'include'
+        body: JSON.stringify({ login, password }),
       });
-      const data = await res.json();
-      if (res.ok) {
-        setMessage('✅ Успішний вхід');
-        setTimeout(() => navigate('/ai'), 500);
-      } else {
-        setMessage(data.error || '❌ Помилка входу');
-      }
-    } catch (err) {
-      console.error(err);
-      setMessage('❌ Помилка з’єднання');
+
+      if (!response.ok) throw new Error('Login failed');
+
+      const data = await response.json();
+      localStorage.setItem('user_login', data.login);
+      navigate('/ai');
+    } catch (error) {
+      console.error(error);
+      setError('Не вдалося увійти. Перевірте логін або пароль.');
     }
   };
 
   return (
-    <div className="min-h-screen flex items-center justify-center bg-gradient-to-br from-gray-100 to-indigo-200 dark:from-gray-900 dark:to-gray-800 transition">
-      <form onSubmit={handleSubmit} className="bg-white dark:bg-gray-800 shadow-2xl rounded-2xl p-8 w-full max-w-sm space-y-6">
-        <h2 className="text-2xl font-bold text-center text-gray-900 dark:text-gray-100">🔐 Вхід</h2>
-        <input
-          name="username"
-          value={form.username}
-          onChange={handleChange}
-          placeholder="Логін"
-          className="w-full px-4 py-2 rounded-xl border border-gray-300 dark:border-gray-600 bg-white dark:bg-gray-700 text-gray-800 dark:text-gray-100 focus:outline-none focus:ring-2 focus:ring-indigo-400"
-        />
-        <input
-          name="password"
-          type="password"
-          value={form.password}
-          onChange={handleChange}
-          placeholder="Пароль"
-          className="w-full px-4 py-2 rounded-xl border border-gray-300 dark:border-gray-600 bg-white dark:bg-gray-700 text-gray-800 dark:text-gray-100 focus:outline-none focus:ring-2 focus:ring-indigo-400"
-        />
-        <button type="submit" className="w-full bg-indigo-600 hover:bg-indigo-700 text-white font-semibold py-2 rounded-xl transition">
-          Увійти
+    <div className="min-h-screen flex items-center justify-center bg-gradient-to-br from-blue-100 to-indigo-300 dark:from-gray-900 dark:to-gray-800">
+      <div className="bg-white dark:bg-gray-800 p-8 rounded-lg shadow-md w-full max-w-md">
+        <button
+          onClick={() => navigate('/')}
+          className="flex items-center gap-1 text-sm text-indigo-600 hover:underline mb-4"
+        >
+          <ArrowLeft size={16} /> Назад
         </button>
-
-        <div className="flex justify-center">
-          <BackButton className="text-sm" />
-        </div>
-
-        {message && <p className="text-center text-sm text-gray-600 dark:text-gray-300">{message}</p>}
-      </form>
+        <h2 className="text-2xl font-bold mb-6 text-center text-gray-800 dark:text-white">Вхід</h2>
+        {error && <p className="text-red-500 mb-4">{error}</p>}
+        <form onSubmit={handleSubmit} className="space-y-4">
+          <div>
+            <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">Логін</label>
+            <input
+              type="text"
+              value={login}
+              onChange={(e) => setLogin(e.target.value)}
+              required
+              className="w-full p-2 border rounded dark:bg-gray-700 dark:border-gray-600 dark:text-white"
+              placeholder="Ваш логін"
+            />
+          </div>
+          <div>
+            <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">Пароль</label>
+            <input
+              type="password"
+              value={password}
+              onChange={(e) => setPassword(e.target.value)}
+              required
+              className="w-full p-2 border rounded dark:bg-gray-700 dark:border-gray-600 dark:text-white"
+              placeholder="Ваш пароль"
+            />
+          </div>
+          <button
+            type="submit"
+            className="w-full bg-blue-600 text-white py-2 rounded hover:bg-blue-700 transition-colors"
+          >
+            Увійти
+          </button>
+        </form>
+      </div>
     </div>
   );
-}
+};
+
+export default Login;

@@ -28,10 +28,24 @@ const SettingsPage = () => {
 
   useEffect(() => {
     const saved = localStorage.getItem('profile');
+    const userLogin = localStorage.getItem('user_login');
+
     if (saved) {
       const parsed = JSON.parse(saved);
-      setProfileData(parsed);
-      setEditForm({ name: parsed.name, login: parsed.login });
+      const updatedProfile = {
+        ...parsed,
+        login: parsed.login || userLogin || ''
+      };
+      setProfileData(updatedProfile);
+      setEditForm({ name: updatedProfile.name, login: updatedProfile.login });
+    } else if (userLogin) {
+      const updatedProfile = {
+        name: '',
+        login: userLogin,
+        avatar: null
+      };
+      setProfileData(updatedProfile);
+      setEditForm({ name: '', login: userLogin });
     }
   }, []);
 
@@ -88,7 +102,7 @@ const SettingsPage = () => {
   };
 
   return (
-<div className={`min-h-screen transition-all pt-16 bg-gradient-to-br ${darkMode ? 'from-gray-900 to-gray-800 text-white' : 'from-gray-100 to-indigo-300 text-gray-900'}`}>
+    <div className={`min-h-screen transition-all pt-16 bg-gradient-to-br ${darkMode ? 'from-gray-900 to-gray-800 text-white' : 'from-gray-100 to-indigo-300 text-gray-900'}`}>
       {/* Sidebar */}
       <div className={`fixed top-0 left-0 z-50 h-full transform ${isSidebarOpen ? 'translate-x-0' : '-translate-x-full'} transition-transform duration-300 ease-in-out`}>
         <Sidebar darkMode={darkMode} setDarkMode={setDarkMode} />
@@ -105,7 +119,7 @@ const SettingsPage = () => {
       </button>
 
       {/* Content */}
-<div className="max-w-3xl mx-auto bg-white dark:bg-gray-800 rounded-xl shadow-lg p-8 space-y-8 mt-* transition-colors duration-300">
+      <div className="max-w-3xl mx-auto bg-white dark:bg-gray-800 rounded-xl shadow-lg p-8 space-y-8 mt-* transition-colors duration-300">
         <h1 className="text-3xl font-bold mb-6 flex items-center gap-2">️ {t('settings.title')}</h1>
 
         {/* Профіль */}
