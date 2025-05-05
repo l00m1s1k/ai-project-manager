@@ -9,7 +9,7 @@ from django.shortcuts import get_object_or_404
 from django.contrib.auth.models import User
 from django.contrib.auth import authenticate, login, logout
 from django.contrib.auth.hashers import make_password
-from .models import Task, Project
+from .models import Task, Project, Feedback  # Додано Feedback
 import google.generativeai as genai
 
 # Завантаження змінних середовища
@@ -30,6 +30,7 @@ def send_telegram_message(text):
     except Exception as e:
         print("Помилка при відправленні Telegram:", e)
 
+
 # === AI ===
 @csrf_exempt
 def ai_help(request):
@@ -46,7 +47,6 @@ def ai_help(request):
             response = model.generate_content(task_text)
             answer = response.text.strip()
 
-            # Якщо користувач залогінений — зберігаємо, інакше просто відповідаємо
             if request.user.is_authenticated:
                 Task.objects.create(user=request.user, title=task_text, ai_response=answer)
 
@@ -55,6 +55,7 @@ def ai_help(request):
             return JsonResponse({"error": str(e)}, status=500)
 
     return JsonResponse({"error": "Метод не дозволений"}, status=405)
+
 
 # === TASKS ===
 @csrf_exempt
@@ -96,6 +97,7 @@ def update_task(request, task_id):
     task.save()
     return JsonResponse({'message': 'Задачу оновлено'})
 
+
 # === PROJECTS ===
 @csrf_exempt
 @require_http_methods(["POST"])
@@ -126,6 +128,7 @@ def create_project(request):
     except Exception as e:
         return JsonResponse({"error": str(e)}, status=500)
 
+
 # === AUTH ===
 @csrf_exempt
 @require_http_methods(["POST"])
@@ -155,7 +158,7 @@ def login_user(request):
 
     if user is not None:
         login(request, user)
-        return JsonResponse({"message": "Успішний вхід"})
+        return JsonResponse({"message": "Успішний вхід", "username": user.username})
     else:
         return JsonResponse({"error": "Невірні дані"}, status=401)
 
@@ -164,3 +167,21 @@ def login_user(request):
 def logout_user(request):
     logout(request)
     return JsonResponse({"message": "Вихід виконано"})
+
+
+# === FEEDBACK ===
+@csrf_exempt
+@require_http_methods(["POST"])
+def send_feedback(request):
+    try:
+        data = json.loads(request.body)
+        name = data.get("name", "").strip()
+        message = data.get("message", "").strip()
+
+        if not name or not message:
+            return JsonResponse({"error": "Потрібно заповнити всі поля"}, status=400)
+
+        Feedback.objects.create(name=name, message=message)
+        return JsonResponse({"message": "Звернення збережено"})
+    except Exception as e:
+        return JsonResponse({"error": str(e)}, status=500)
