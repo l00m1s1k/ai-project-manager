@@ -44,7 +44,7 @@ const Login = () => {
       localStorage.setItem('user_login', data.username || login);
 
       // ⏳ Затримка 2 секунди перед переходом
-      setTimeout(() => navigate('/ai'), 2000);
+      setTimeout(() => navigate('/ai'), 1000);
     } catch (err) {
       console.error(err);
       setError('Помилка зʼєднання з сервером.');
