@@ -11,13 +11,27 @@ const Register = () => {
   const [loading, setLoading] = useState(false);
   const navigate = useNavigate();
 
+  const isLoginValid = (text) => /^[a-zA-Zа-яА-ЯіІїЇєЄґҐ0-9]{3,}$/.test(text);
+  const isPasswordValid = (text) => /^[a-zA-Z0-9]{6,}$/.test(text);
+
   const handleSubmit = async (e) => {
     e.preventDefault();
     setError('');
     setUserExists(false);
     setSuccess('');
-    setLoading(true);
 
+    // Клієнтська перевірка
+    if (!isLoginValid(login)) {
+      setError('Логін повинен містити щонайменше 3 символи українською або англійською мовою.');
+      return;
+    }
+
+    if (!isPasswordValid(password)) {
+      setError('Пароль повинен містити щонайменше 6 символів англійською мовою (латиниця).');
+      return;
+    }
+
+    setLoading(true);
     try {
       const response = await fetch('https://ai-project-manager-4frq.onrender.com/api/register/', {
         method: 'POST',
@@ -41,7 +55,7 @@ const Register = () => {
 
       setSuccess('Реєстрація успішна! Перенаправлення...');
       localStorage.setItem('user_login', login);
-      setTimeout(() => navigate('/ai'), 1000);
+      setTimeout(() => navigate('/ai'), 3000);
     } catch (err) {
       console.error(err);
       setError('Помилка зʼєднання з сервером.');
