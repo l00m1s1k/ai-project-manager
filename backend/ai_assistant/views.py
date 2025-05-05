@@ -30,7 +30,6 @@ def send_telegram_message(text):
     except Exception as e:
         print("Помилка при відправленні Telegram:", e)
 
-
 # === AI ===
 @csrf_exempt
 def ai_help(request):
@@ -47,17 +46,15 @@ def ai_help(request):
             response = model.generate_content(task_text)
             answer = response.text.strip()
 
+            # Якщо користувач залогінений — зберігаємо, інакше просто відповідаємо
             if request.user.is_authenticated:
                 Task.objects.create(user=request.user, title=task_text, ai_response=answer)
-            else:
-                return JsonResponse({"error": "Неавторизований користувач"}, status=401)
 
             return JsonResponse({"response": answer})
         except Exception as e:
             return JsonResponse({"error": str(e)}, status=500)
 
     return JsonResponse({"error": "Метод не дозволений"}, status=405)
-
 
 # === TASKS ===
 @csrf_exempt
@@ -99,7 +96,6 @@ def update_task(request, task_id):
     task.save()
     return JsonResponse({'message': 'Задачу оновлено'})
 
-
 # === PROJECTS ===
 @csrf_exempt
 @require_http_methods(["POST"])
@@ -129,7 +125,6 @@ def create_project(request):
         return JsonResponse({"message": "Проєкт створено", "id": project.id})
     except Exception as e:
         return JsonResponse({"error": str(e)}, status=500)
-
 
 # === AUTH ===
 @csrf_exempt
