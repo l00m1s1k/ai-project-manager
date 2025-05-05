@@ -6,123 +6,104 @@ const Register = () => {
   const [password, setPassword] = useState('');
   const [showPassword, setShowPassword] = useState(false);
   const [error, setError] = useState('');
-  const [duplicateUser, setDuplicateUser] = useState(false);
+  const [userExists, setUserExists] = useState(false);
   const navigate = useNavigate();
 
   const handleSubmit = async (e) => {
     e.preventDefault();
     setError('');
-    setDuplicateUser(false);
-
-    if (!login || !password) {
-      setError('Усі поля обовʼязкові');
-      return;
-    }
-
-    if (password.length < 6) {
-      setError('Пароль має містити щонайменше 6 символів');
-      return;
-    }
+    setUserExists(false);
 
     try {
       const response = await fetch('https://ai-project-manager-4frq.onrender.com/api/register/', {
         method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ username: login, password }),
+        headers: {
+          'Content-Type': 'application/json'
+        },
+        body: JSON.stringify({ username: login, password })
       });
 
+      const data = await response.json();
+
       if (!response.ok) {
-        const data = await response.json();
-        console.log('Registration error response:', data); // Додано логування
-
-        // Розширена перевірка дубліката користувача
-        if (response.status === 400 &&
-            (data.username || data.error || '').toLowerCase().includes('already exists')) {
-          setDuplicateUser(true);
-          return;
+        if (response.status === 400 && (data.username || data.detail || JSON.stringify(data).toLowerCase().includes('exist'))) {
+          setUserExists(true);
+        } else {
+          setError(data?.error || 'Не вдалося зареєструватися. Спробуйте ще раз.');
         }
-
-        setError(data.error || 'Не вдалося зареєструватися. Спробуйте ще раз.');
         return;
       }
 
-      const data = await response.json();
-      localStorage.setItem('user_login', data.username || login);
+      localStorage.setItem('user_login', login);
       navigate('/ai');
-    } catch (error) {
-      console.error('Registration failed:', error);
+    } catch (err) {
+      console.error(err);
       setError('Помилка зʼєднання з сервером.');
     }
   };
 
   return (
-    <div className="min-h-screen flex items-center justify-center bg-gradient-to-br from-indigo-100 to-white dark:from-gray-900 dark:to-gray-800 text-gray-900 dark:text-white px-4">
-      <div className="relative max-w-xl w-full bg-white dark:bg-gray-800 rounded-3xl shadow-xl p-10 space-y-6">
+    <div className="min-h-screen flex items-center justify-center bg-gradient-to-br from-indigo-100 to-white dark:from-gray-900 dark:to-gray-800 px-4">
+      <div className="relative w-full max-w-md bg-white dark:bg-gray-800 rounded-3xl shadow-lg p-8">
+        {/* Кнопка Назад */}
         <button
           onClick={() => navigate(-1)}
-          className="absolute top-4 left-4 flex items-center gap-1 text-sm font-medium px-3 py-1.5 rounded-full shadow-sm bg-indigo-100 hover:bg-indigo-200 text-indigo-800 dark:bg-gray-700 dark:text-white dark:hover:bg-gray-600 transition-all duration-200"
+          className="absolute top-4 left-4 flex items-center gap-1 text-sm font-medium px-3 py-1.5 rounded-full bg-indigo-100 hover:bg-indigo-200 text-indigo-800 dark:bg-gray-700 dark:text-white dark:hover:bg-gray-600"
         >
-          <span className="text-lg">←</span> Назад
+          ← Назад
         </button>
 
-        <h2 className="text-3xl font-bold text-center">Реєстрація</h2>
+        <h2 className="text-3xl font-bold text-center text-gray-800 dark:text-white mb-6">Реєстрація</h2>
 
-        {/* Покращене відображення помилок */}
-        {duplicateUser && (
-          <div className="bg-yellow-100 border-l-4 border-yellow-500 text-yellow-700 p-4 mb-4 rounded">
-            <p>
-              Користувач <strong>{login}</strong> вже існує.
-              <Link
-                to="/login"
-                className="ml-2 text-indigo-600 hover:text-indigo-800 font-medium underline"
-              >
-                Увійти в акаунт
-              </Link>
-            </p>
+        {/* Повідомлення про помилки */}
+        {userExists && (
+          <div className="bg-yellow-50 border border-yellow-300 text-yellow-800 px-4 py-3 rounded-lg text-sm text-center mb-4">
+            Користувач з таким логіном вже існує.{' '}
+            <Link
+              to="/login"
+              className="underline text-indigo-600 hover:text-indigo-800 font-medium"
+            >
+              Увійти
+            </Link>
           </div>
         )}
-
-        {error && !duplicateUser && (
-          <div className="bg-red-100 border-l-4 border-red-500 text-red-700 p-4 mb-4 rounded">
-            {error}
-          </div>
+        {error && !userExists && (
+          <div className="text-red-500 text-sm text-center mb-4">{error}</div>
         )}
 
         <form onSubmit={handleSubmit} className="space-y-4">
           <div>
-            <label className="block text-sm font-medium mb-1">Логін</label>
+            <label className="block text-sm font-medium text-gray-700 dark:text-gray-300">Логін</label>
             <input
               type="text"
               value={login}
               onChange={(e) => setLogin(e.target.value)}
               required
-              className="w-full p-3 border rounded-2xl border-gray-300 dark:border-gray-600 dark:bg-gray-700 dark:text-white"
-              placeholder="Введіть логін"
+              className="w-full px-4 py-2 mt-1 border rounded-2xl border-gray-300 dark:border-gray-600 dark:bg-gray-700 dark:text-white"
+              placeholder="meow"
             />
           </div>
-
           <div className="relative">
-            <label className="block text-sm font-medium mb-1">Пароль</label>
+            <label className="block text-sm font-medium text-gray-700 dark:text-gray-300">Пароль</label>
             <input
               type={showPassword ? 'text' : 'password'}
               value={password}
               onChange={(e) => setPassword(e.target.value)}
               required
-              className="w-full p-3 border rounded-2xl border-gray-300 dark:border-gray-600 dark:bg-gray-700 dark:text-white"
-              placeholder="Введіть пароль"
+              className="w-full px-4 py-2 mt-1 border rounded-2xl border-gray-300 dark:border-gray-600 dark:bg-gray-700 dark:text-white"
+              placeholder="********"
             />
             <button
               type="button"
               onClick={() => setShowPassword(!showPassword)}
-              className="absolute right-3 top-9 text-gray-500 hover:text-gray-700 dark:hover:text-gray-300 text-sm"
+              className="absolute right-4 top-9 text-gray-500 dark:text-gray-300"
             >
               {showPassword ? '🙈' : '👁️'}
             </button>
           </div>
-
           <button
             type="submit"
-            className="w-full py-3 px-4 bg-indigo-600 hover:bg-indigo-700 text-white text-sm font-medium rounded-2xl transition-all"
+            className="w-full py-3 px-4 mt-4 bg-indigo-600 hover:bg-indigo-700 text-white text-sm font-semibold rounded-2xl"
           >
             Зареєструватися
           </button>
