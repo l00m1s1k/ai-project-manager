@@ -11,7 +11,6 @@ const Register = () => {
 
   const handleSubmit = async (e) => {
     e.preventDefault();
-
     setError('');
     setDuplicateUser(false);
 
@@ -37,9 +36,9 @@ const Register = () => {
       if (!response.ok) {
         if (data?.username?.[0] === 'A user with that username already exists.') {
           setDuplicateUser(true);
-        } else {
-          setError(data.error || 'Не вдалося зареєструватися. Спробуйте ще раз.');
+          return;
         }
+        setError(data.error || 'Не вдалося зареєструватися. Спробуйте ще раз.');
         return;
       }
 
@@ -47,7 +46,7 @@ const Register = () => {
       navigate('/ai');
     } catch (error) {
       console.error(error);
-      setError('Помилка з’єднання з сервером.');
+      setError('Помилка зʼєднання з сервером.');
     }
   };
 
@@ -68,9 +67,12 @@ const Register = () => {
         )}
 
         {duplicateUser && (
-          <div className="text-yellow-600 text-sm text-center">
+          <div className="bg-yellow-50 border border-yellow-300 text-yellow-800 px-4 py-3 rounded-lg text-sm text-center">
             Користувач з таким логіном вже існує.{' '}
-            <Link to="/login" className="text-indigo-600 underline hover:text-indigo-800">
+            <Link
+              to="/login"
+              className="text-indigo-600 underline hover:text-indigo-800 font-medium"
+            >
               Бажаєте увійти?
             </Link>
           </div>
