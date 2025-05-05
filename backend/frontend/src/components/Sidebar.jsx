@@ -20,7 +20,7 @@ const Sidebar = ({ darkMode, setDarkMode }) => {
       </h2>
 
       <nav className="flex flex-col gap-2">
-        <Link to="/assistant" className={linkClass('/assistant')}>
+        <Link to="/ai" className={linkClass('/ai')}>
           🧠 {t('sidebar.ai')}
         </Link>
         <Link to="/projects" className={linkClass('/projects')}>
