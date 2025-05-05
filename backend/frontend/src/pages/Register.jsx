@@ -31,22 +31,26 @@ const Register = () => {
         body: JSON.stringify({ username: login, password }),
       });
 
-      const data = await response.json();
-
       if (!response.ok) {
-        const message = JSON.stringify(data).toLowerCase();
-        if (message.includes('exists') || message.includes('username')) {
+        const data = await response.json();
+        console.log('Registration error response:', data); // Додано логування
+
+        // Розширена перевірка дубліката користувача
+        if (response.status === 400 &&
+            (data.username || data.error || '').toLowerCase().includes('already exists')) {
           setDuplicateUser(true);
-        } else {
-          setError(data?.error || 'Не вдалося зареєструватися. Спробуйте ще раз.');
+          return;
         }
+
+        setError(data.error || 'Не вдалося зареєструватися. Спробуйте ще раз.');
         return;
       }
 
+      const data = await response.json();
       localStorage.setItem('user_login', data.username || login);
       navigate('/ai');
     } catch (error) {
-      console.error(error);
+      console.error('Registration failed:', error);
       setError('Помилка зʼєднання з сервером.');
     }
   };
@@ -63,21 +67,25 @@ const Register = () => {
 
         <h2 className="text-3xl font-bold text-center">Реєстрація</h2>
 
-        {/* Виправлений блок для duplicateUser */}
+        {/* Покращене відображення помилок */}
         {duplicateUser && (
-          <div className="bg-yellow-50 border border-yellow-300 text-yellow-800 px-4 py-3 rounded-lg text-sm text-center">
-            Користувач з таким логіном вже існує.{' '}
-            <Link
-              to="/login"
-              className="text-indigo-600 underline hover:text-indigo-800 font-medium"
-            >
-              Бажаєте увійти?
-            </Link>
+          <div className="bg-yellow-100 border-l-4 border-yellow-500 text-yellow-700 p-4 mb-4 rounded">
+            <p>
+              Користувач <strong>{login}</strong> вже існує.
+              <Link
+                to="/login"
+                className="ml-2 text-indigo-600 hover:text-indigo-800 font-medium underline"
+              >
+                Увійти в акаунт
+              </Link>
+            </p>
           </div>
         )}
 
         {error && !duplicateUser && (
-          <div className="text-red-500 text-sm text-center">{error}</div>
+          <div className="bg-red-100 border-l-4 border-red-500 text-red-700 p-4 mb-4 rounded">
+            {error}
+          </div>
         )}
 
         <form onSubmit={handleSubmit} className="space-y-4">
