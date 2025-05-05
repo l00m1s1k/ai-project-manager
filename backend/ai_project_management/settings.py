@@ -60,6 +60,8 @@ TEMPLATES = [
     },
 ]
 
+WHITENOISE_ROOT = os.path.join(BASE_DIR, 'staticfiles', 'admin')
+
 WSGI_APPLICATION = 'backend.ai_project_management.wsgi.application'
 
 DATABASES = {
