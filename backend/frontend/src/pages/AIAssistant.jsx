@@ -1,3 +1,5 @@
+// файл: AIAssistant.jsx
+
 import React, { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
 import Sidebar from '../components/Sidebar';
@@ -21,7 +23,6 @@ function AIAssistant() {
   const [editedTitle, setEditedTitle] = useState('');
   const [searchQuery, setSearchQuery] = useState('');
 
-  // Перевірка авторизації при завантаженні сторінки
   useEffect(() => {
     fetch('https://ai-project-manager-4frq.onrender.com/api/ai-help/', {
       credentials: 'include'
@@ -42,7 +43,6 @@ function AIAssistant() {
     if (!task.trim()) return;
     setLoading(true);
     setError('');
-
     try {
       const res = await fetch('https://ai-project-manager-4frq.onrender.com/api/ai-help/', {
         method: 'POST',
