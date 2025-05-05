@@ -38,7 +38,7 @@ const Register = () => {
           setDuplicateUser(true);
           return;
         }
-        setError(data.error || 'Не вдалося зареєструватися. Спробуйте ще раз.');
+        setError(data?.error || 'Не вдалося зареєструватися. Спробуйте ще раз.');
         return;
       }
 
