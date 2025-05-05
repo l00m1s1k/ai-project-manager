@@ -13,17 +13,21 @@ const Register = () => {
       const response = await fetch('https://ai-project-manager-4frq.onrender.com/api/register/', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ login, password }),
+        body: JSON.stringify({ username: login, password }), // 🔥 ключова зміна
       });
 
-      if (!response.ok) throw new Error('Registration failed');
-
       const data = await response.json();
-      localStorage.setItem('user_login', data.login);
+
+      if (!response.ok) {
+        setError(data.error || 'Не вдалося зареєструватися. Спробуйте ще раз.');
+        return;
+      }
+
+      localStorage.setItem('user_login', data.username || login);
       navigate('/ai');
     } catch (error) {
       console.error(error);
-      setError('Не вдалося зареєструватися. Спробуйте ще раз.');
+      setError('Помилка з’єднання з сервером.');
     }
   };
 

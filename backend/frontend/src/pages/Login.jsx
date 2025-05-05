@@ -13,17 +13,21 @@ const Login = () => {
       const response = await fetch('https://ai-project-manager-4frq.onrender.com/api/login/', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ login, password }),
+        body: JSON.stringify({ username: login, password }), // 👈 замість login
       });
 
-      if (!response.ok) throw new Error('Login failed');
-
       const data = await response.json();
-      localStorage.setItem('user_login', data.login);
+
+      if (!response.ok) {
+        setError(data.error || 'Не вдалося увійти. Спробуйте ще раз.');
+        return;
+      }
+
+      localStorage.setItem('user_login', data.username || login);
       navigate('/ai');
     } catch (error) {
       console.error(error);
-      setError('Не вдалося увійти. Перевірте логін або пароль.');
+      setError('Помилка з’єднання з сервером.');
     }
   };
 
