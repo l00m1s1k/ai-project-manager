@@ -1,5 +1,6 @@
 import React, { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
+import { ArrowLeft } from 'lucide-react';
 
 export default function Register() {
   const [form, setForm] = useState({ username: '', password: '' });
@@ -34,7 +35,16 @@ export default function Register() {
 
   return (
     <div className="min-h-screen flex items-center justify-center bg-gradient-to-br from-gray-100 to-indigo-200 dark:from-gray-900 dark:to-gray-800 transition">
-      <form onSubmit={handleSubmit} className="bg-white dark:bg-gray-800 shadow-2xl rounded-2xl p-8 w-full max-w-sm space-y-6">
+      <form onSubmit={handleSubmit} className="bg-white dark:bg-gray-800 shadow-2xl rounded-2xl p-8 w-full max-w-sm space-y-6 relative">
+        <button
+          type="button"
+          onClick={() => navigate('/')}
+          className="absolute -top-4 -left-4 flex items-center gap-1 bg-white dark:bg-gray-800 border border-gray-300 dark:border-gray-600 text-indigo-600 px-3 py-1 rounded-full text-sm hover:bg-indigo-50 dark:hover:bg-gray-700 transition"
+        >
+          <ArrowLeft size={16} />
+          Назад
+        </button>
+
         <h2 className="text-2xl font-bold text-center text-gray-900 dark:text-gray-100">📝 Реєстрація</h2>
         <input
           name="username"
@@ -53,14 +63,6 @@ export default function Register() {
         />
         <button type="submit" className="w-full bg-indigo-600 hover:bg-indigo-700 text-white font-semibold py-2 rounded-xl transition">
           Зареєструватися
-        </button>
-
-        <button
-          type="button"
-          onClick={() => navigate('/')}
-          className="w-full text-indigo-600 hover:text-indigo-800 text-sm underline transition"
-        >
-          ← Назад на головну
         </button>
 
         {message && <p className="text-center text-sm text-gray-600 dark:text-gray-300">{message}</p>}
