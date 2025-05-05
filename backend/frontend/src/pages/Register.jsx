@@ -1,5 +1,6 @@
 import React, { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
+import BackButton from '../components/BackButton';
 
 export default function Register() {
   const [form, setForm] = useState({ username: '', password: '' });
@@ -55,13 +56,9 @@ export default function Register() {
           Зареєструватися
         </button>
 
-        <button
-          type="button"
-          onClick={() => navigate('/')}
-          className="w-full text-indigo-600 hover:text-indigo-800 text-sm underline transition"
-        >
-          ← Назад на головну
-        </button>
+        <div className="flex justify-center">
+          <BackButton className="text-sm" />
+        </div>
 
         {message && <p className="text-center text-sm text-gray-600 dark:text-gray-300">{message}</p>}
       </form>
