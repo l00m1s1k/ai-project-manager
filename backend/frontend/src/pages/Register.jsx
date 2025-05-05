@@ -62,11 +62,7 @@ const Register = () => {
 
         <h2 className="text-3xl font-bold text-center">Реєстрація</h2>
 
-        {error && (
-          <div className="text-red-500 text-sm text-center">{error}</div>
-        )}
-
-        {duplicateUser && (
+        {duplicateUser ? (
           <div className="bg-yellow-50 border border-yellow-300 text-yellow-800 px-4 py-3 rounded-lg text-sm text-center">
             Користувач з таким логіном вже існує.{' '}
             <Link
@@ -76,6 +72,8 @@ const Register = () => {
               Бажаєте увійти?
             </Link>
           </div>
+        ) : error && (
+          <div className="text-red-500 text-sm text-center">{error}</div>
         )}
 
         <form onSubmit={handleSubmit} className="space-y-4">
