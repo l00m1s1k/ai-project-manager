@@ -40,7 +40,7 @@ const Deadlines = () => {
 
   const getDeadlineColor = (text) => {
     const daysMatch = text?.match(/\d+/);
-    if (!daysMatch) return 'text-red-400'; // якщо не вдалось витягти цифру — вважаємо прострочено
+    if (!daysMatch) return 'text-red-400';
     const count = parseInt(daysMatch[0]);
 
     if (text.includes(t('deadlines.hoursLeft', { count: '' }).replace(/\d+/g, ''))) {

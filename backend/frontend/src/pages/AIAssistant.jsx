@@ -21,7 +21,7 @@ function AIAssistant() {
   const [editedTitle, setEditedTitle] = useState('');
   const [searchQuery, setSearchQuery] = useState('');
 
-  // ⛔ Перевірка авторизації при завантаженні сторінки
+  // Перевірка авторизації при завантаженні сторінки
   useEffect(() => {
     fetch('https://ai-project-manager-4frq.onrender.com/api/ai-help/', {
       credentials: 'include'

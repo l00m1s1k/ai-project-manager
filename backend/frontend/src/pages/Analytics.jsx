@@ -37,7 +37,6 @@ const Analytics = () => {
       const withCreatedAt = parsed.map(p => ({
         ...p,
         created_at: p.created_at || new Date().toISOString(),
-        // Додаємо поле completed_at, якщо воно відсутнє для завершених проектів
         completed_at: p.status === 'Завершено' && !p.completed_at ? p.created_at : p.completed_at
       }));
       setProjects(withCreatedAt);

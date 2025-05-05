@@ -6,7 +6,7 @@ class Task(models.Model):
     title = models.CharField(max_length=255)
     ai_response = models.TextField()
     created_at = models.DateTimeField(auto_now_add=True)
-    deadline = models.DateTimeField(null=True, blank=True)  # Додано поле для дедлайну
+    deadline = models.DateTimeField(null=True, blank=True)
 
 class Project(models.Model):
     title = models.CharField(max_length=255)
