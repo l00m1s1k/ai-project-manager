@@ -33,9 +33,8 @@ const Register = () => {
 
       if (!response.ok) {
         const data = await response.json();
-        console.log('Registration error response:', data); // Додано логування
+        console.log('Registration error response:', data);
 
-        // Розширена перевірка дубліката користувача
         if (response.status === 400 &&
             (data.username || data.error || '').toLowerCase().includes('already exists')) {
           setDuplicateUser(true);
@@ -67,18 +66,15 @@ const Register = () => {
 
         <h2 className="text-3xl font-bold text-center">Реєстрація</h2>
 
-        {/* Покращене відображення помилок */}
         {duplicateUser && (
-          <div className="bg-yellow-100 border-l-4 border-yellow-500 text-yellow-700 p-4 mb-4 rounded">
-            <p>
-              Користувач <strong>{login}</strong> вже існує.
-              <Link
-                to="/login"
-                className="ml-2 text-indigo-600 hover:text-indigo-800 font-medium underline"
-              >
-                Увійти в акаунт
-              </Link>
-            </p>
+          <div className="bg-yellow-100 border-l-4 border-yellow-500 text-yellow-700 p-4 mb-4 rounded text-center">
+            Користувач вже існує,{' '}
+            <Link
+              to="/login"
+              className="text-indigo-600 hover:text-indigo-800 font-medium underline"
+            >
+              бажаєте увійти?
+            </Link>
           </div>
         )}
 
