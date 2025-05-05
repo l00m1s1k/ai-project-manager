@@ -1,5 +1,8 @@
-from django.urls import path
+from django.urls import path, include
+from django.contrib import admin
 from backend.ai_assistant import views
+from django.conf import settings
+from django.conf.urls.static import static
 
 urlpatterns = [
     # AUTH
@@ -17,4 +20,11 @@ urlpatterns = [
 
     # Projects
     path('api/projects/', views.create_project, name='create_project'),
+
+    # Додано адмінку
+    path('admin/', admin.site.urls),
+    path('api/', include('backend.ai_assistant.urls')),
 ]
+
+if settings.DEBUG:
+    urlpatterns += static(settings.STATIC_URL, document_root=settings.STATIC_ROOT)

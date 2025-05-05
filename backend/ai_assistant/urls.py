@@ -12,13 +12,13 @@ from .views import (
 )
 
 urlpatterns = [
-    path("api/ai/", ai_help),
-    path("api/tasks/", get_tasks),
-    path("api/tasks/<int:task_id>/", delete_task),
-    path("api/tasks/<int:task_id>/update/", update_task),
-    path("api/projects/", create_project),
-    path("api/register/", register),
-    path("api/login/", login_user),
-    path("api/logout/", logout_user),
-    path("api/feedback/", send_feedback),
+    path("ai-help/", ai_help, name="ai_help"),
+    path("tasks/", get_tasks, name="get_tasks"),
+    path("tasks/<int:task_id>/", delete_task, name="delete_task"),
+    path("tasks/<int:task_id>/update/", update_task, name="update_task"),
+    path("projects/", create_project, name="create_project"),
+    path("register/", register, name="register"),
+    path("login/", login_user, name="login_user"),
+    path("logout/", logout_user, name="logout_user"),
+    path("feedback/", send_feedback, name="send_feedback"),
 ]

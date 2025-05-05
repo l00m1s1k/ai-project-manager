@@ -32,6 +32,7 @@ INSTALLED_APPS = [
 MIDDLEWARE = [
     'corsheaders.middleware.CorsMiddleware',
     'django.middleware.security.SecurityMiddleware',
+    'whitenoise.middleware.WhiteNoiseMiddleware',
     'django.contrib.sessions.middleware.SessionMiddleware',
     'corsheaders.middleware.CorsMiddleware',
     'django.middleware.common.CommonMiddleware',
@@ -80,21 +81,32 @@ TIME_ZONE = 'Europe/Kyiv'
 USE_I18N = True
 USE_TZ = True
 
-STATIC_URL = 'static/'
-STATIC_ROOT = BASE_DIR / 'staticfiles'
+# Зміни в налаштуваннях:
+STATIC_URL = '/static/'
+STATIC_ROOT = os.path.join(BASE_DIR, 'staticfiles')
+STATICFILES_STORAGE = 'whitenoise.storage.CompressedManifestStaticFilesStorage'
 
 # CORS + Cookies + Cross-origin settings
 CORS_ALLOW_CREDENTIALS = True
 
 CORS_ALLOWED_ORIGINS = [
     "https://ai-project-manager-av3m1xx5z-andrews-projects-e652aa45.vercel.app",
-    "https://ai-project-manager-rosy.vercel.app"
+    "https://ai-project-manager-rosy.vercel.app",
+    "https://ai-project-manager-av3m1xx5z-andrews-projects-e652aa45.vercel.app",
+    "https://ai-project-manager-rosy.vercel.app",
+    "https://ai-project-manager-4frq.onrender.com"
 ]
 
 CSRF_TRUSTED_ORIGINS = [
     "https://ai-project-manager-av3m1xx5z-andrews-projects-e652aa45.vercel.app",
-    "https://ai-project-manager-rosy.vercel.app"
+    "https://ai-project-manager-rosy.vercel.app",
+    "https://ai-project-manager-av3m1xx5z-andrews-projects-e652aa45.vercel.app",
+    "https://ai-project-manager-rosy.vercel.app",
+    "https://ai-project-manager-4frq.onrender.com"
 ]
+
+ADMIN_URL = 'admin/'
+ADMIN_SITE_HEADER = "AI Project Manager Administration"
 
 SESSION_COOKIE_SAMESITE = "None"
 SESSION_COOKIE_SECURE = True
