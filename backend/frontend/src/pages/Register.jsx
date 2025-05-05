@@ -34,12 +34,12 @@ const Register = () => {
       const data = await response.json();
 
       if (!response.ok) {
-        if (data?.username?.[0] === 'A user with that username already exists.') {
+        if (data?.username?.[0]?.includes('already exists')) {
           setDuplicateUser(true);
-          return;
+        } else {
+          setError(data?.error || 'Не вдалося зареєструватися. Спробуйте ще раз.');
         }
-        setError(data?.error || 'Не вдалося зареєструватися. Спробуйте ще раз.');
-        return;
+        return; // ❗ важливо: зупиняє navigate
       }
 
       localStorage.setItem('user_login', data.username || login);
