@@ -6,13 +6,17 @@ const Register = () => {
   const [password, setPassword] = useState('');
   const [showPassword, setShowPassword] = useState(false);
   const [error, setError] = useState('');
+  const [success, setSuccess] = useState('');
   const [userExists, setUserExists] = useState(false);
+  const [loading, setLoading] = useState(false);
   const navigate = useNavigate();
 
   const handleSubmit = async (e) => {
     e.preventDefault();
     setError('');
     setUserExists(false);
+    setSuccess('');
+    setLoading(true);
 
     try {
       const response = await fetch('https://ai-project-manager-4frq.onrender.com/api/register/', {
@@ -24,21 +28,24 @@ const Register = () => {
       });
 
       const data = await response.json();
+      setLoading(false);
 
       if (!response.ok) {
         if (response.status === 400 && (data.username || data.detail || JSON.stringify(data).toLowerCase().includes('exist'))) {
           setUserExists(true);
         } else {
-          setError(data?.error || 'Не вдалося зареєструватися. Спробуйте ще раз.');
+          setError(data?.error || 'Некоректні дані. Спробуйте ще раз.');
         }
         return;
       }
 
+      setSuccess('Реєстрація успішна! Перенаправлення...');
       localStorage.setItem('user_login', login);
-      navigate('/ai');
+      setTimeout(() => navigate('/ai'), 1000);
     } catch (err) {
       console.error(err);
       setError('Помилка зʼєднання з сервером.');
+      setLoading(false);
     }
   };
 
@@ -55,7 +62,12 @@ const Register = () => {
 
         <h2 className="text-3xl font-bold text-center text-gray-800 dark:text-white mb-6">Реєстрація</h2>
 
-        {/* Повідомлення про помилки */}
+        {/* Повідомлення */}
+        {success && (
+          <div className="bg-green-50 border border-green-300 text-green-800 px-4 py-3 rounded-lg text-sm text-center mb-4 animate-pulse">
+            {success}
+          </div>
+        )}
         {userExists && (
           <div className="bg-yellow-50 border border-yellow-300 text-yellow-800 px-4 py-3 rounded-lg text-sm text-center mb-4">
             Користувач з таким логіном вже існує.{' '}
@@ -68,7 +80,9 @@ const Register = () => {
           </div>
         )}
         {error && !userExists && (
-          <div className="text-red-500 text-sm text-center mb-4">{error}</div>
+          <div className="bg-red-50 border border-red-300 text-red-700 px-4 py-3 rounded-lg text-sm text-center mb-4">
+            {error}
+          </div>
         )}
 
         <form onSubmit={handleSubmit} className="space-y-4">
@@ -80,7 +94,7 @@ const Register = () => {
               onChange={(e) => setLogin(e.target.value)}
               required
               className="w-full px-4 py-2 mt-1 border rounded-2xl border-gray-300 dark:border-gray-600 dark:bg-gray-700 dark:text-white"
-              placeholder="meow"
+              placeholder="Введіть логін"
             />
           </div>
           <div className="relative">
@@ -91,7 +105,7 @@ const Register = () => {
               onChange={(e) => setPassword(e.target.value)}
               required
               className="w-full px-4 py-2 mt-1 border rounded-2xl border-gray-300 dark:border-gray-600 dark:bg-gray-700 dark:text-white"
-              placeholder="********"
+              placeholder="Введіть пароль"
             />
             <button
               type="button"
@@ -103,9 +117,12 @@ const Register = () => {
           </div>
           <button
             type="submit"
-            className="w-full py-3 px-4 mt-4 bg-indigo-600 hover:bg-indigo-700 text-white text-sm font-semibold rounded-2xl"
+            disabled={loading}
+            className={`w-full py-3 px-4 mt-4 text-white text-sm font-semibold rounded-2xl ${
+              loading ? 'bg-indigo-400 cursor-wait' : 'bg-indigo-600 hover:bg-indigo-700'
+            }`}
           >
-            Зареєструватися
+            {loading ? 'Реєстрація...' : 'Зареєструватися'}
           </button>
         </form>
       </div>
