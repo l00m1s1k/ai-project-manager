@@ -20,7 +20,6 @@ const Register = () => {
     setUserExists(false);
     setSuccess('');
 
-    // Клієнтська перевірка
     if (!isLoginValid(login)) {
       setError('Логін повинен містити щонайменше 3 символи українською або англійською мовою.');
       return;
@@ -55,7 +54,7 @@ const Register = () => {
 
       setSuccess('Реєстрація успішна! Перенаправлення...');
       localStorage.setItem('user_login', login);
-      setTimeout(() => navigate('/ai'), 3000);
+      setTimeout(() => navigate('/ai'), 4000); // ⏳ затримка 4 сек
     } catch (err) {
       console.error(err);
       setError('Помилка зʼєднання з сервером.');
