@@ -37,7 +37,7 @@ const App = () => {
     <Router>
       <Routes>
         <Route path="/" element={<LandingPage />} />
-        <Route path="/assistant" element={<AIAssistant />} />
+        <Route path="/ai" element={<AIAssistant />} />
         <Route path="/projects" element={<Projects darkMode={darkMode} />} />
         <Route path="/deadlines" element={<Deadlines />} />
         <Route path="/resources" element={<Resources />} />
