@@ -55,7 +55,7 @@ const Register = () => {
 
       setSuccess('Реєстрація успішна! Перенаправлення...');
       localStorage.setItem('user_login', login);
-      setTimeout(() => navigate('/ai'), 3000);
+      setTimeout(() => navigate('/ai'), 2000);
     } catch (err) {
       console.error(err);
       setError('Помилка зʼєднання з сервером.');
