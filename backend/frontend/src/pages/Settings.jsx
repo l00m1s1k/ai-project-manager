@@ -211,14 +211,25 @@ const SettingsPage = () => {
           </div>
           <form onSubmit={handleEditSubmit} className="space-y-4">
             <div>
-              <label htmlFor="name" className="block text-sm font-medium mb-1">{t('settings.name')}</label>
+              <label htmlFor="login" className="block text-sm font-medium mb-1">{t('settings.login')}</label>
               <input
-                id="name"
+                id="login"
                 type="text"
+                value={editForm.login}
+                onChange={(e) => setEditForm({ ...editForm, login: e.target.value })}
+                className="w-full p-2 border rounded dark:bg-gray-700 dark:border-gray-600"
+                required
+              />
+            </div>
+            <div>
+           <label htmlFor="name" className="block text-sm font-medium mb-1">Email</label>
+            <input
+                id="name"
+                type="email"
                 value={editForm.name}
                 onChange={(e) => setEditForm({ ...editForm, name: e.target.value })}
                 className="w-full p-2 border rounded dark:bg-gray-700 dark:border-gray-600"
-                required
+                placeholder="example@gmail.com"
               />
             </div>
             <div>
