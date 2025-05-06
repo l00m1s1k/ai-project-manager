@@ -4,6 +4,7 @@ import Modal from 'react-modal';
 import Sidebar from '../components/Sidebar';
 import { useTranslation } from 'react-i18next';
 import { useNavigate } from 'react-router-dom';
+import { fetchWithAuth } from '../utils/fetchWithAuth';
 
 if (Modal.defaultStyles) {
   Modal.setAppElement('#root');
@@ -18,33 +19,13 @@ const SettingsPage = () => {
   const [isSidebarOpen, setIsSidebarOpen] = useState(false);
   const [isEditModalOpen, setIsEditModalOpen] = useState(false);
 
-  const [profileData, setProfileData] = useState({
-    name: '',
-    login: '',
-    avatar: null
-  });
-
-  const [editForm, setEditForm] = useState({
-    name: '',
-    login: ''
-  });
+  const [profileData, setProfileData] = useState({ name: '', login: '', avatar: null });
+  const [editForm, setEditForm] = useState({ name: '', login: '' });
 
   useEffect(() => {
-    const token = localStorage.getItem('token');
-    if (!token) {
-      navigate('/login');
-      return;
-    }
-
-    fetch(`${process.env.REACT_APP_API_URL}/profile/`, {
-      headers: {
-        Authorization: `Bearer ${token}`,
-      },
-    })
+    fetchWithAuth(`${process.env.REACT_APP_API_URL}/profile/`)
       .then(res => {
-        if (res.status === 401) {
-          throw new Error('Unauthorized');
-        }
+        if (!res.ok) throw new Error('Unauthorized');
         return res.json();
       })
       .then(data => {
@@ -81,29 +62,24 @@ const SettingsPage = () => {
   const toggleDarkMode = () => setDarkMode(!darkMode);
   const toggleNotifications = () => setNotificationsEnabled(!notificationsEnabled);
 
-  const handleEditSubmit = (e) => {
+  const handleEditSubmit = async (e) => {
     e.preventDefault();
-    const token = localStorage.getItem('token');
-    fetch(`${process.env.REACT_APP_API_URL}/profile/`, {
-      method: 'PUT',
-      headers: {
-        'Content-Type': 'application/json',
-        Authorization: `Bearer ${token}`,
-      },
-      body: JSON.stringify({
-       user: {
-        username: editForm.login,
-        first_name: editForm.name
-        }
-      })
-    })
-      .then(res => res.json())
-      .then(data => {
-        setProfileData(data);
-        setEditForm({ name: data.name || '', login: data.login || '' });
-        closeEditModal();
-      })
-      .catch(err => console.error('Update error:', err));
+    try {
+      const res = await fetchWithAuth(`${process.env.REACT_APP_API_URL}/profile/`, {
+        method: 'PUT',
+        body: JSON.stringify({
+          login: editForm.login,
+          name: editForm.name
+        }),
+      });
+
+      const data = await res.json();
+      setProfileData(data);
+      setEditForm({ name: data.name || '', login: data.login || '' });
+      closeEditModal();
+    } catch (err) {
+      console.error('Update error:', err);
+    }
   };
 
   const handleAvatarChange = (e) => {
@@ -118,20 +94,18 @@ const SettingsPage = () => {
 
   return (
     <div className={`min-h-screen transition-all pt-16 bg-gradient-to-br ${darkMode ? 'from-gray-900 to-gray-800 text-white' : 'from-gray-100 to-indigo-300 text-gray-900'}`}>
+      {/* Sidebar */}
       <div className={`fixed top-0 left-0 z-50 h-full transform ${isSidebarOpen ? 'translate-x-0' : '-translate-x-full'} transition-transform duration-300 ease-in-out`}>
         <Sidebar darkMode={darkMode} setDarkMode={setDarkMode} />
       </div>
       {isSidebarOpen && (
         <div onClick={() => setIsSidebarOpen(false)} className="fixed inset-0 z-40 bg-black bg-opacity-30" />
       )}
-      <button
-        onClick={toggleSidebar}
-        className="fixed top-4 left-4 z-50 bg-indigo-600 hover:bg-indigo-700 text-white p-2 rounded-full shadow-md"
-        title={t('settings.menu')}
-      >
+      <button onClick={toggleSidebar} className="fixed top-4 left-4 z-50 bg-indigo-600 hover:bg-indigo-700 text-white p-2 rounded-full shadow-md">
         <Menu size={24} />
       </button>
 
+      {/* Main Content */}
       <div className="max-w-3xl mx-auto bg-white dark:bg-gray-800 rounded-xl shadow-lg p-8 space-y-8 mt-* transition-colors duration-300">
         <h1 className="text-3xl font-bold mb-6 flex items-center gap-2">️ {t('settings.title')}</h1>
 
@@ -140,7 +114,6 @@ const SettingsPage = () => {
           <h2 className="text-xl font-semibold mb-4 flex items-center gap-2">
             <User className="text-blue-500" /> {t('settings.profile')}
           </h2>
-
           <div className="flex items-center gap-4 mb-4">
             <div className="relative">
               {profileData.avatar ? (
@@ -194,10 +167,7 @@ const SettingsPage = () => {
             </div>
             <div className="flex items-center justify-between">
               <h3 className="font-medium">{t('settings.notifications')}</h3>
-              <button
-                onClick={toggleNotifications}
-                className={`p-2 rounded-full ${notificationsEnabled ? 'bg-blue-100 dark:bg-blue-900' : 'bg-gray-200 dark:bg-gray-600'}`}
-              >
+              <button onClick={toggleNotifications} className={`p-2 rounded-full ${notificationsEnabled ? 'bg-blue-100 dark:bg-blue-900' : 'bg-gray-200 dark:bg-gray-600'}`}>
                 {notificationsEnabled ? <Bell className="text-blue-500" /> : <BellOff className="text-gray-500" />}
               </button>
             </div>

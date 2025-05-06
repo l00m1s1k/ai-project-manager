@@ -22,7 +22,7 @@ const Login = () => {
 
     setLoading(true);
     try {
-      const response = await fetch('https://ai-project-manager-4frq.onrender.com/api/login/', {
+      const response = await fetch('https://ai-project-manager-4frq.onrender.com/api/token/', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({ username: login, password }),
@@ -32,18 +32,19 @@ const Login = () => {
       setLoading(false);
 
       if (!response.ok) {
-        if (data?.detail === 'No active account found with the given credentials') {
+        if (data?.detail?.toLowerCase().includes('no active account')) {
           setError('Неправильний логін або пароль');
         } else {
-          setError(data?.error || 'Не вдалося увійти. Спробуйте ще раз.');
+          setError(data?.detail || 'Не вдалося увійти. Спробуйте ще раз.');
         }
         return;
       }
 
-      setSuccess('Вхід успішний! Перенаправлення...');
-      localStorage.setItem('user_login', data.username || login);
+      localStorage.setItem('token', data.access);
+      localStorage.setItem('refresh_token', data.refresh);
+      localStorage.setItem('user_login', login);
 
-      // ⏳ Затримка 2 секунди перед переходом
+      setSuccess('Вхід успішний! Перенаправлення...');
       setTimeout(() => navigate('/ai'), 1000);
     } catch (err) {
       console.error(err);
@@ -55,7 +56,6 @@ const Login = () => {
   return (
     <div className="min-h-screen flex items-center justify-center bg-gradient-to-br from-indigo-100 to-white dark:from-gray-900 dark:to-gray-800 px-4">
       <div className="relative max-w-md w-full bg-white dark:bg-gray-800 rounded-3xl shadow-lg p-8">
-        {/* Кнопка Назад */}
         <button
           onClick={() => navigate(-1)}
           className="absolute top-4 left-4 flex items-center gap-1 text-sm font-medium px-3 py-1.5 rounded-full bg-indigo-100 hover:bg-indigo-200 text-indigo-800 dark:bg-gray-700 dark:text-white dark:hover:bg-gray-600"
@@ -65,7 +65,6 @@ const Login = () => {
 
         <h2 className="text-3xl font-bold text-center text-gray-800 dark:text-white mb-6">Вхід</h2>
 
-        {/* Повідомлення */}
         {success && (
           <div className="bg-green-50 border border-green-300 text-green-800 px-4 py-3 rounded-lg text-sm text-center mb-4 animate-pulse">
             {success}

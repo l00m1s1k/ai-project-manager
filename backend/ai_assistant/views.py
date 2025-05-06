@@ -162,26 +162,26 @@ def register(request):
     return JsonResponse({"message": "Реєстрація успішна", "username": user.username})
 
 
-@csrf_exempt
-@require_http_methods(["POST"])
-def login_user(request):
-    data = json.loads(request.body)
-    username = data.get("username")
-    password = data.get("password")
+#@csrf_exempt
+#@require_http_methods(["POST"])
+#def login_user(request):
+    #    data = json.loads(request.body)
+    #   username = data.get("username")
+    #   password = data.get("password")
 
-    user = authenticate(request, username=username, password=password)
+    #  user = authenticate(request, username=username, password=password)
 
-    if user is not None:
-        login(request, user)
-        return JsonResponse({"message": "Успішний вхід", "username": user.username})
-    else:
-        return JsonResponse({"error": "Невірні дані"}, status=401)
+    # if user is not None:
+    #     login(request, user)
+    #      return JsonResponse({"message": "Успішний вхід", "username": user.username})
+    #  else:
+#      return JsonResponse({"error": "Невірні дані"}, status=401)
 
-@csrf_exempt
-@require_http_methods(["POST"])
-def logout_user(request):
-    logout(request)
-    return JsonResponse({"message": "Вихід виконано"})
+#@csrf_exempt
+#@require_http_methods(["POST"])
+#def logout_user(request):
+    #   logout(request)
+#   return JsonResponse({"message": "Вихід виконано"})
 
 @csrf_exempt
 @require_http_methods(["POST"])
