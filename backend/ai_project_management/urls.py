@@ -26,7 +26,7 @@ urlpatterns = [
     # Профіль  сетінгс
     path('admin/', admin.site.urls),
     path('api/', include('backend.ai_assistant.urls')),
-    path('api/token/', TokenObtainPairView.as_view(), name='token_obtain_pair'),
+    path('api/token/', views.CustomTokenObtainPairView.as_view(), name='token_obtain_pair'),
     path('api/token/refresh/', TokenRefreshView.as_view(), name='token_refresh'),
 
 ]
