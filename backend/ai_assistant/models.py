@@ -22,9 +22,9 @@ class Project(models.Model):
         return self.title
 
 class Feedback(models.Model):
-    name = models.CharField(max_length=255)
+    name = models.CharField(max_length=100)
     message = models.TextField()
     submitted_at = models.DateTimeField(default=timezone.now)
 
     def __str__(self):
-        return f"{self.name} — {self.submitted_at.strftime('%Y-%m-%d %H:%M:%S')}"
+        return f"{self.name} - {self.submitted_at.strftime('%Y-%m-%d %H:%M')}"

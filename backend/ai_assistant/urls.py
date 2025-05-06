@@ -8,7 +8,7 @@ from .views import (
     register,
     login_user,
     logout_user,
-    send_feedback
+    submit_feedback
 )
 
 urlpatterns = [
@@ -20,5 +20,5 @@ urlpatterns = [
     path("register/", register, name="register"),
     path("login/", login_user, name="login_user"),
     path("logout/", logout_user, name="logout_user"),
-    path("feedback/", send_feedback, name="send_feedback"),
+    path("feedback/", submit_feedback, name="submit_feedback"),
 ]

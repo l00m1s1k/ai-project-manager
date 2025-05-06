@@ -6,12 +6,9 @@ const FeedbackForm = () => {
   const { t } = useTranslation();
   const navigate = useNavigate();
 
-  const [formData, setFormData] = useState({
-    name: '',
-    message: ''
-  });
-
+  const [formData, setFormData] = useState({ name: '', message: '' });
   const [submitted, setSubmitted] = useState(false);
+  const [error, setError] = useState('');
 
   const handleChange = (e) => {
     setFormData(prev => ({
@@ -20,11 +17,28 @@ const FeedbackForm = () => {
     }));
   };
 
-  const handleSubmit = (e) => {
+  const handleSubmit = async (e) => {
     e.preventDefault();
-    setSubmitted(true);
-    setTimeout(() => setSubmitted(false), 4000);
-    setFormData({ name: '', message: '' });
+    setError('');
+
+    try {
+      const response = await fetch('https://ai-project-manager-4frq.onrender.com/api/feedback/', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json'
+        },
+        body: JSON.stringify(formData)
+      });
+
+      if (!response.ok) throw new Error('Помилка при надсиланні');
+
+      setSubmitted(true);
+      setTimeout(() => setSubmitted(false), 4000);
+      setFormData({ name: '', message: '' });
+
+    } catch (err) {
+      setError('Не вдалося надіслати. Спробуйте ще раз.');
+    }
   };
 
   return (
@@ -39,7 +53,9 @@ const FeedbackForm = () => {
         </button>
 
         <h1 className="text-3xl font-bold text-center">{t('feedback.title')}</h1>
-        <p className="text-center text-gray-600 dark:text-gray-400">{t('feedback.messagePrompt') || 'We’d love to hear your feedback!'}</p>
+        <p className="text-center text-gray-600 dark:text-gray-400">
+          {t('feedback.messagePrompt') || 'We’d love to hear your feedback!'}
+        </p>
 
         <form onSubmit={handleSubmit} className="space-y-4 mt-4">
           <div>
@@ -80,7 +96,14 @@ const FeedbackForm = () => {
           </button>
 
           {submitted && (
-            <p className="text-green-500 text-center font-medium mt-2">{t('feedback.success')}</p>
+            <p className="text-green-500 text-center font-medium mt-2">
+              {t('feedback.success') || 'Повідомлення надіслано!'}
+            </p>
+          )}
+          {error && (
+            <p className="text-red-500 text-center font-medium mt-2">
+              {error}
+            </p>
           )}
         </form>
       </div>

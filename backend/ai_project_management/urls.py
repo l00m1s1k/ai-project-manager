@@ -15,10 +15,13 @@ urlpatterns = [
     # Tasks
     path('api/tasks/', views.get_tasks, name='get_tasks'),
     path('api/tasks/<int:task_id>/', views.update_task, name='update_task'),
-    path('api/tasks/<int:task_id>/', views.delete_task, name='delete_task'),
+    path('api/tasks/<int:task_id>/delete/', views.delete_task, name='delete_task'),  # Додано /delete/
 
     # Projects
     path('api/projects/', views.create_project, name='create_project'),
+
+    # Feedback
+    path('api/feedback/', views.submit_feedback, name='submit_feedback'),  # Додано шлях для feedback
 
     # Додано адмінку
     path('admin/', admin.site.urls),

@@ -25,8 +25,9 @@ INSTALLED_APPS = [
     'django.contrib.sessions',
     'django.contrib.messages',
     'django.contrib.staticfiles',
+    'django.core.mail',
     'corsheaders',
-    'backend.ai_assistant',
+    'backend.ai_assistant'
 ]
 
 MIDDLEWARE = [
@@ -106,8 +107,14 @@ CSRF_TRUSTED_ORIGINS = [
     "https://ai-project-manager-4frq.onrender.com"
 ]
 
-ADMIN_URL = 'admin/'
-ADMIN_SITE_HEADER = "AI Project Manager Administration"
+EMAIL_BACKEND = 'django.core.mail.backends.smtp.EmailBackend'
+EMAIL_HOST = 'smtp.gmail.com'
+EMAIL_PORT = 587
+EMAIL_USE_TLS = True
+EMAIL_HOST_USER = os.getenv("EMAIL_HOST_USER")
+EMAIL_HOST_PASSWORD = os.getenv("EMAIL_HOST_PASSWORD")
+DEFAULT_FROM_EMAIL = EMAIL_HOST_USER
+ADMIN_EMAIL = os.getenv("ADMIN_EMAIL")
 
 SESSION_COOKIE_SAMESITE = "None"
 SESSION_COOKIE_SECURE = True

@@ -7,9 +7,12 @@ from django.views.decorators.csrf import csrf_exempt
 from django.views.decorators.http import require_http_methods
 from django.shortcuts import get_object_or_404
 from django.contrib.auth.models import User
+from django.core.mail import send_mail
+from django.conf import settings
+from .models import Feedback
 from django.contrib.auth import authenticate, login, logout
 from django.contrib.auth.hashers import make_password
-from .models import Task, Project, Feedback  # Додано Feedback
+from .models import Task, Project, Feedback
 import google.generativeai as genai
 
 # Завантаження змінних середовища
@@ -169,19 +172,28 @@ def logout_user(request):
     return JsonResponse({"message": "Вихід виконано"})
 
 
-# === FEEDBACK ===
 @csrf_exempt
 @require_http_methods(["POST"])
-def send_feedback(request):
+def submit_feedback(request):
     try:
         data = json.loads(request.body)
-        name = data.get("name", "").strip()
-        message = data.get("message", "").strip()
+        name = data.get("name", "")
+        message = data.get("message", "")
 
         if not name or not message:
-            return JsonResponse({"error": "Потрібно заповнити всі поля"}, status=400)
+            return JsonResponse({"error": "Ім'я та повідомлення обов'язкові"}, status=400)
 
-        Feedback.objects.create(name=name, message=message)
-        return JsonResponse({"message": "Звернення збережено"})
+        feedback = Feedback.objects.create(name=name, message=message)  # Змінено FeedbackForm на Feedback
+
+        # Надсилання листа на пошту
+        send_mail(
+            subject=f"Нове звернення від {name}",
+            message=message,
+            from_email=settings.DEFAULT_FROM_EMAIL,
+            recipient_list=[settings.ADMIN_EMAIL],
+            fail_silently=False,
+        )
+
+        return JsonResponse({"message": "Дякуємо за ваш відгук!"})
     except Exception as e:
         return JsonResponse({"error": str(e)}, status=500)
