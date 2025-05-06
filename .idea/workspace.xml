@@ -7,7 +7,7 @@
     <list default="true" id="683dd2ba-e6e5-4940-bedf-a71096a006c3" name="Changes" comment="">
       <change afterPath="$PROJECT_DIR$/test-chart-app/src/pages/Analytics.jsx" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/backend/ai_project_management/urls.py" beforeDir="false" afterPath="$PROJECT_DIR$/backend/ai_project_management/urls.py" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/backend/ai_assistant/views.py" beforeDir="false" afterPath="$PROJECT_DIR$/backend/ai_assistant/views.py" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/test-chart-app/.gitignore" beforeDir="false" afterPath="$PROJECT_DIR$/test-chart-app/.gitignore" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/test-chart-app/package-lock.json" beforeDir="false" afterPath="$PROJECT_DIR$/test-chart-app/package-lock.json" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/test-chart-app/package.json" beforeDir="false" afterPath="$PROJECT_DIR$/test-chart-app/package.json" afterDir="false" />
@@ -44,25 +44,25 @@
     <option name="hideEmptyMiddlePackages" value="true" />
     <option name="showLibraryContents" value="true" />
   </component>
-  <component name="PropertiesComponent"><![CDATA[{
-  "keyToString": {
-    "Django Server.DjangoProject.executor": "Run",
-    "RunOnceActivity.OpenDjangoStructureViewOnStart": "true",
-    "RunOnceActivity.ShowReadmeOnStart": "true",
-    "RunOnceActivity.git.unshallow": "true",
-    "git-widget-placeholder": "main",
-    "last_opened_file_path": "/Users/Andre/PycharmProjects/DjangoProject/backend/frontend/src",
-    "list.type.of.created.stylesheet": "CSS",
-    "node.js.detected.package.eslint": "true",
-    "node.js.detected.package.tslint": "true",
-    "node.js.selected.package.eslint": "(autodetect)",
-    "node.js.selected.package.tslint": "(autodetect)",
-    "nodejs_package_manager_path": "npm",
-    "settings.editor.selected.configurable": "com.jetbrains.python.configuration.PyActiveSdkModuleConfigurable",
-    "ts.external.directory.path": "/Users/Andre/PycharmProjects/DjangoProject/node_modules/typescript/lib",
-    "vue.rearranger.settings.migration": "true"
+  <component name="PropertiesComponent">{
+  &quot;keyToString&quot;: {
+    &quot;Django Server.DjangoProject.executor&quot;: &quot;Run&quot;,
+    &quot;RunOnceActivity.OpenDjangoStructureViewOnStart&quot;: &quot;true&quot;,
+    &quot;RunOnceActivity.ShowReadmeOnStart&quot;: &quot;true&quot;,
+    &quot;RunOnceActivity.git.unshallow&quot;: &quot;true&quot;,
+    &quot;git-widget-placeholder&quot;: &quot;main&quot;,
+    &quot;last_opened_file_path&quot;: &quot;/Users/Andre/PycharmProjects/DjangoProject/backend/frontend/src&quot;,
+    &quot;list.type.of.created.stylesheet&quot;: &quot;CSS&quot;,
+    &quot;node.js.detected.package.eslint&quot;: &quot;true&quot;,
+    &quot;node.js.detected.package.tslint&quot;: &quot;true&quot;,
+    &quot;node.js.selected.package.eslint&quot;: &quot;(autodetect)&quot;,
+    &quot;node.js.selected.package.tslint&quot;: &quot;(autodetect)&quot;,
+    &quot;nodejs_package_manager_path&quot;: &quot;npm&quot;,
+    &quot;settings.editor.selected.configurable&quot;: &quot;com.jetbrains.python.configuration.PyActiveSdkModuleConfigurable&quot;,
+    &quot;ts.external.directory.path&quot;: &quot;/Users/Andre/PycharmProjects/DjangoProject/node_modules/typescript/lib&quot;,
+    &quot;vue.rearranger.settings.migration&quot;: &quot;true&quot;
   }
-}]]></component>
+}</component>
   <component name="RecentsManager">
     <key name="CopyFile.RECENT_KEYS">
       <recent name="$PROJECT_DIR$/backend/frontend/src" />
@@ -128,7 +128,8 @@
       <workItem from="1743715635861" duration="3062000" />
       <workItem from="1743720291748" duration="3292000" />
       <workItem from="1743930262140" duration="77393000" />
-      <workItem from="1745669691383" duration="73059000" />
+      <workItem from="1745669691383" duration="73850000" />
+      <workItem from="1746542217173" duration="48000" />
     </task>
     <servers />
   </component>

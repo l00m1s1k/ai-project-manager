@@ -23,6 +23,7 @@ from rest_framework.views import APIView
 from rest_framework.parsers import MultiPartParser, FormParser
 from rest_framework_simplejwt.views import TokenObtainPairView
 from rest_framework_simplejwt.serializers import TokenObtainPairSerializer
+from rest_framework.decorators import api_view, permission_classes
 
 from .models import Profile, Task, Project, Feedback
 from .serializers import ProfileSerializer
@@ -247,3 +248,12 @@ class ProfileView(APIView):
 
 class CustomTokenObtainPairView(TokenObtainPairView):
     serializer_class = TokenObtainPairSerializer
+
+    @api_view(['GET'])
+    @permission_classes([IsAuthenticated])
+    def get_profile(request):
+        user = request.user
+        return Response({
+            'name': user.first_name,
+            'login': user.username,
+        })
