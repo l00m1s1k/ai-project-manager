@@ -145,9 +145,12 @@ const SettingsPage = () => {
               <input id="avatar-upload" type="file" accept="image/*" className="hidden" onChange={handleAvatarChange} />
             </div>
             <div>
-              <p className="font-medium">{profileData.name || t('settings.notSpecified')}</p>
-              <p className="text-sm text-gray-500 dark:text-gray-400">{profileData.login || t('settings.notSpecified')}</p>
-            </div>
+               <p className="font-medium">{profileData.login || t('settings.notSpecified')}</p>
+                 <p className="text-sm text-gray-500 dark:text-gray-400">
+                   {profileData.name ? profileData.name : 'Додайте пошту'}
+              </p>
+          </div>
+
           </div>
           <button onClick={openEditModal} className="bg-blue-600 text-white px-4 py-2 rounded hover:bg-blue-700 flex items-center gap-2">
             <User size={18} /> {t('settings.editProfile')}
