@@ -1,4 +1,5 @@
 from django.urls import path
+from .views import ProfileView
 from .views import (
     ai_help,
     get_tasks,
@@ -20,5 +21,6 @@ urlpatterns = [
     path("register/", register, name="register"),
     path("login/", login_user, name="login_user"),
     path("logout/", logout_user, name="logout_user"),
+    path('profile/', ProfileView.as_view(), name='profile'),
     path("feedback/", submit_feedback, name="submit_feedback"),
 ]

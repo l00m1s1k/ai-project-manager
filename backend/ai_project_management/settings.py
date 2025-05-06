@@ -28,6 +28,7 @@ INSTALLED_APPS = [
     'django.core.mail',
     'django.contrib.postgres',
     'corsheaders',
+    'rest_framework',
     'backend.ai_assistant'
 ]
 

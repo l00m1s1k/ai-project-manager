@@ -1,19 +1,28 @@
 import os
 import json
 import requests
+import google.generativeai as genai
+
 from dotenv import load_dotenv
+
+from django.conf import settings
+from django.core.mail import send_mail
 from django.http import JsonResponse
+from django.shortcuts import get_object_or_404
 from django.views.decorators.csrf import csrf_exempt
 from django.views.decorators.http import require_http_methods
-from django.shortcuts import get_object_or_404
-from django.contrib.auth.models import User
-from django.core.mail import send_mail
-from django.conf import settings
-from .models import Feedback
 from django.contrib.auth import authenticate, login, logout
 from django.contrib.auth.hashers import make_password
-from .models import Task, Project, Feedback
-import google.generativeai as genai
+from django.contrib.auth.models import User
+
+from rest_framework import generics, permissions
+from rest_framework.decorators import api_view, permission_classes
+from rest_framework.permissions import IsAuthenticated
+from rest_framework.response import Response
+from rest_framework.views import APIView
+
+from .models import Profile, Task, Project, Feedback
+from .serializers import ProfileSerializer
 
 # Завантаження змінних середовища
 load_dotenv()
@@ -32,7 +41,6 @@ def send_telegram_message(text):
         requests.post(url, data=data)
     except Exception as e:
         print("Помилка при відправленні Telegram:", e)
-
 
 # === AI ===
 @csrf_exempt
@@ -58,7 +66,6 @@ def ai_help(request):
             return JsonResponse({"error": str(e)}, status=500)
 
     return JsonResponse({"error": "Метод не дозволений"}, status=405)
-
 
 # === TASKS ===
 @csrf_exempt
@@ -100,11 +107,13 @@ def update_task(request, task_id):
     task.save()
     return JsonResponse({'message': 'Задачу оновлено'})
 
-
 # === PROJECTS ===
 @csrf_exempt
 @require_http_methods(["POST"])
 def create_project(request):
+    if not request.user.is_authenticated:
+        return JsonResponse({"error": "Неавторизований користувач"}, status=401)
+
     data = json.loads(request.body)
     title = data.get("title")
     status = data.get("status", "У процесі")
@@ -117,6 +126,7 @@ def create_project(request):
 
     try:
         project = Project.objects.create(
+            user=request.user,
             title=title,
             status=status,
             category=category,
@@ -130,7 +140,6 @@ def create_project(request):
         return JsonResponse({"message": "Проєкт створено", "id": project.id})
     except Exception as e:
         return JsonResponse({"error": str(e)}, status=500)
-
 
 # === AUTH ===
 @csrf_exempt
@@ -171,7 +180,6 @@ def logout_user(request):
     logout(request)
     return JsonResponse({"message": "Вихід виконано"})
 
-
 @csrf_exempt
 @require_http_methods(["POST"])
 def submit_feedback(request):
@@ -183,9 +191,8 @@ def submit_feedback(request):
         if not name or not message:
             return JsonResponse({"error": "Ім'я та повідомлення обов'язкові"}, status=400)
 
-        feedback = Feedback.objects.create(name=name, message=message)  # Змінено FeedbackForm на Feedback
+        feedback = Feedback.objects.create(name=name, message=message)
 
-        # Надсилання листа на пошту
         send_mail(
             subject=f"Нове звернення від {name}",
             message=message,
@@ -197,3 +204,37 @@ def submit_feedback(request):
         return JsonResponse({"message": "Дякуємо за ваш відгук!"})
     except Exception as e:
         return JsonResponse({"error": str(e)}, status=500)
+
+# === PROFILE ===
+@api_view(['GET', 'PUT'])
+@permission_classes([IsAuthenticated])
+def profile_view(request):
+    try:
+        profile = request.user.profile
+    except Profile.DoesNotExist:
+        return Response({'error': 'Профіль не знайдено'}, status=404)
+
+    if request.method == 'GET':
+        serializer = ProfileSerializer(profile)
+        return Response(serializer.data)
+
+    if request.method == 'PUT':
+        serializer = ProfileSerializer(profile, data=request.data, partial=True)
+        if serializer.is_valid():
+            serializer.save()
+            return Response(serializer.data)
+        return Response(serializer.errors, status=400)
+
+class ProfileView(APIView):
+    permission_classes = [IsAuthenticated]
+
+    def get(self, request):
+        serializer = ProfileSerializer(request.user.profile)
+        return Response(serializer.data)
+
+    def put(self, request):
+        serializer = ProfileSerializer(request.user.profile, data=request.data, partial=True)
+        if serializer.is_valid():
+            serializer.save()
+            return Response(serializer.data)
+        return Response(serializer.errors, status=400)

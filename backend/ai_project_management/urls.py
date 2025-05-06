@@ -1,7 +1,6 @@
-from django.urls import path, include
 from django.contrib import admin
 from backend.ai_assistant import views
-from django.conf import settings
+from django.urls import path, include
 
 urlpatterns = [
     # AUTH
@@ -15,15 +14,16 @@ urlpatterns = [
     # Tasks
     path('api/tasks/', views.get_tasks, name='get_tasks'),
     path('api/tasks/<int:task_id>/', views.update_task, name='update_task'),
-    path('api/tasks/<int:task_id>/delete/', views.delete_task, name='delete_task'),  # Додано /delete/
+    path('api/tasks/<int:task_id>/delete/', views.delete_task, name='delete_task'),
 
     # Projects
     path('api/projects/', views.create_project, name='create_project'),
 
     # Feedback
-    path('api/feedback/', views.submit_feedback, name='submit_feedback'),  # Додано шлях для feedback
+    path('api/feedback/', views.submit_feedback, name='submit_feedback'),
 
-    # Додано адмінку
+    # Профіль  сетінгс
     path('admin/', admin.site.urls),
     path('api/', include('backend.ai_assistant.urls')),
+
 ]
