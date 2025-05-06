@@ -97,16 +97,12 @@ STATICFILES_STORAGE = 'whitenoise.storage.CompressedManifestStaticFilesStorage'
 CORS_ALLOW_CREDENTIALS = True
 
 CORS_ALLOWED_ORIGINS = [
-    "https://ai-project-manager-av3m1xx5z-andrews-projects-e652aa45.vercel.app",
     "https://ai-project-manager-rosy.vercel.app",
     "https://ai-project-manager-av3m1xx5z-andrews-projects-e652aa45.vercel.app",
-    "https://ai-project-manager-rosy.vercel.app",
     "https://ai-project-manager-4frq.onrender.com"
 ]
 
 CSRF_TRUSTED_ORIGINS = [
-    "https://ai-project-manager-av3m1xx5z-andrews-projects-e652aa45.vercel.app",
-    "https://ai-project-manager-rosy.vercel.app",
     "https://ai-project-manager-av3m1xx5z-andrews-projects-e652aa45.vercel.app",
     "https://ai-project-manager-rosy.vercel.app",
     "https://ai-project-manager-4frq.onrender.com"
