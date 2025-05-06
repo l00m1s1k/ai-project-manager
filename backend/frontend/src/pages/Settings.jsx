@@ -90,7 +90,12 @@ const SettingsPage = () => {
         'Content-Type': 'application/json',
         Authorization: `Bearer ${token}`,
       },
-      body: JSON.stringify(editForm)
+      body: JSON.stringify({
+       user: {
+        username: editForm.login,
+        first_name: editForm.name
+        }
+      })
     })
       .then(res => res.json())
       .then(data => {

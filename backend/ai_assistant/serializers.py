@@ -8,16 +8,21 @@ class UserSerializer(serializers.ModelSerializer):
         fields = ['username', 'email']
 
 class ProfileSerializer(serializers.ModelSerializer):
-    user = UserSerializer()
+    login = serializers.CharField(source='user.username', required=False)
+    email = serializers.EmailField(source='user.email', required=False)
+    avatar = serializers.ImageField(required=False, allow_null=True)
+    name = serializers.CharField(source='user.first_name', required=False)
 
     class Meta:
         model = Profile
-        fields = ['user', 'avatar']
+        fields = ['login', 'email', 'name', 'avatar']
 
     def update(self, instance, validated_data):
         user_data = validated_data.pop('user', {})
         user = instance.user
+
         user.username = user_data.get('username', user.username)
+        user.first_name = user_data.get('first_name', user.first_name)
         user.email = user_data.get('email', user.email)
         user.save()
 
