@@ -25,7 +25,7 @@ const SettingsPage = () => {
   useEffect(() => {
     fetchWithAuth(`${process.env.REACT_APP_API_URL}/profile/`)
       .then(res => {
-        if (!res.ok) throw new Error('Unauthorized');
+        if (!res.ok) throw new Error('Failed to fetch profile');
         return res.json();
       })
       .then(data => {
@@ -33,10 +33,9 @@ const SettingsPage = () => {
         setEditForm({ name: data.name || '', login: data.login || '' });
       })
       .catch(error => {
-        console.error('Auth error:', error);
-        navigate('/login');
+        console.error('Fetch error:', error);
       });
-  }, [navigate]);
+  }, []); 
 
   useEffect(() => {
     document.documentElement.classList.toggle('dark', darkMode);
