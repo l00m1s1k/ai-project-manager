@@ -157,8 +157,10 @@ def register(request):
         return JsonResponse({"error": "Користувач вже існує"}, status=400)
 
     user = User.objects.create(username=username, password=make_password(password))
+    Profile.objects.create(user=user)
     login(request, user)
-    return JsonResponse({"message": "Реєстрація успішна"})
+    return JsonResponse({"message": "Реєстрація успішна", "username": user.username})
+
 
 @csrf_exempt
 @require_http_methods(["POST"])
