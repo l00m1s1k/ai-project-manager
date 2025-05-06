@@ -1,13 +1,14 @@
 from django.contrib import admin
+from django.urls import path
 from backend.ai_assistant import views
-from django.urls import path, include
-from rest_framework_simplejwt.views import TokenObtainPairView, TokenRefreshView
+from backend.ai_assistant.views import CustomTokenObtainPairView
+from rest_framework_simplejwt.views import TokenRefreshView
 
 urlpatterns = [
     # AUTH
     path('api/register/', views.register, name='register'),
-    path('api/login/', views.login_user, name='login'),
-    path('api/logout/', views.logout_user, name='logout'),
+    path('api/token/', CustomTokenObtainPairView.as_view(), name='token_obtain_pair'),
+    path('api/token/refresh/', TokenRefreshView.as_view(), name='token_refresh'),
 
     # AI Assistant
     path('api/ai-help/', views.ai_help, name='ai_help'),
@@ -23,10 +24,7 @@ urlpatterns = [
     # Feedback
     path('api/feedback/', views.submit_feedback, name='submit_feedback'),
 
-    # Профіль  сетінгс
+    # Profile
     path('admin/', admin.site.urls),
-    path('api/', include('backend.ai_assistant.urls')),
-    path('api/token/', views.CustomTokenObtainPairView.as_view(), name='token_obtain_pair'),
-    path('api/token/refresh/', TokenRefreshView.as_view(), name='token_refresh'),
-
+    path('api/profile/', views.ProfileView.as_view(), name='profile'),
 ]
