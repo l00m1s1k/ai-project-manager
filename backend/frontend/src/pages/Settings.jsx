@@ -175,53 +175,68 @@ const SettingsPage = () => {
       </div>
 
       {/* Модальне вікно */}
-      <Modal
-        isOpen={isEditModalOpen}
-        onRequestClose={closeEditModal}
-        className="p-6 bg-white dark:bg-gray-800 rounded-lg shadow-lg max-w-lg w-full mx-auto mt-20"
-        overlayClassName="fixed inset-0 bg-black bg-opacity-50 z-50 flex justify-center items-start overflow-auto"
-      >
-        <div className="p-6">
-          <div className="flex justify-between items-center mb-4">
-            <h2 className="text-xl font-bold">{t('settings.editProfile')}</h2>
-            <button onClick={closeEditModal} className="text-gray-500 hover:text-gray-700 dark:hover:text-gray-300">
-              <X size={24} />
+          <Modal
+      isOpen={isEditModalOpen}
+      onRequestClose={closeEditModal}
+      className="p-6 bg-white dark:bg-gray-800 rounded-lg shadow-lg max-w-lg w-full mx-auto mt-20"
+      overlayClassName="fixed inset-0 bg-black bg-opacity-50 z-50 flex justify-center items-start overflow-auto"
+    >
+      <div className="p-6">
+        <div className="flex justify-between items-center mb-4">
+          <h2 className="text-xl font-bold">{t('settings.editProfile')}</h2>
+          <button 
+            onClick={closeEditModal} 
+            className="text-gray-500 hover:text-gray-700 dark:hover:text-gray-300"
+            aria-label="Close"
+          >
+            <X size={24} />
+          </button>
+        </div>
+        <form onSubmit={handleEditSubmit} className="space-y-4">
+          <div>
+            <label htmlFor="name" className="block text-sm font-medium mb-1">
+              {t('settings.name')}
+            </label>
+            <input
+              id="name"
+              type="text"
+              value={editForm.name}
+              onChange={(e) => setEditForm({ ...editForm, name: e.target.value })}
+              className="w-full p-2 border rounded dark:bg-gray-700 dark:border-gray-600"
+              required
+            />
+          </div>
+          <div>
+            <label htmlFor="login" className="block text-sm font-medium mb-1">
+              {t('settings.login')}
+            </label>
+            <input
+              id="login"
+              type="text"
+              value={editForm.login}
+              onChange={(e) => setEditForm({ ...editForm, login: e.target.value })}
+              className="w-full p-2 border rounded dark:bg-gray-700 dark:border-gray-600"
+              required
+            />
+          </div>
+          <div className="flex justify-end gap-2 pt-4">
+            <button
+              type="button"
+              onClick={closeEditModal}
+              className="px-4 py-2 text-sm rounded border border-gray-300 dark:border-gray-600 hover:bg-gray-100 dark:hover:bg-gray-700"
+            >
+              {t('settings.cancel')}
+            </button>
+            <button
+              type="submit"
+              className="px-4 py-2 text-sm rounded bg-blue-600 text-white hover:bg-blue-700"
+            >
+              {t('settings.save')}
             </button>
           </div>
-          <form onSubmit={handleEditSubmit} className="space-y-4">
-            <div>
-              <label htmlFor="name" className="block text-sm font-medium mb-1">{t('settings.name')}</label>
-              <input
-                id="name"
-                type="text"
-                value={editForm.name}
-                onChange={(e) => setEditForm({ ...editForm, name: e.target.value })}
-                className="w-full p-2 border rounded dark:bg-gray-700 dark:border-gray-600"
-                required
-              />
-            </div>
-            <div>
-              <label htmlFor="login" className="block text-sm font-medium mb-1">{t('settings.login')}</label>
-              <input
-                id="login"
-                type="text"
-                value={editForm.login}
-                onChange={(e) => setEditForm({ ...editForm, login: e.target.value })}
-                className="w-full p-2 border rounded dark:bg-gray-700 dark:border-gray-600"
-                required
-              />
-            </div>
-            <div className="flex justify-end gap-2 pt-4">
-              <button type="button" onClick={closeEditModal} className="px-4 py-2 text-sm rounded border border-gray-300 dark:border-gray-600 hover:bg-gray-100 dark:hover:bg-gray-700">
-                {t('settings.cancel')}
-              </button>
-              <button type="submit" className="px-4 py-2 text-sm rounded bg-blue-600 text-white hover:bg-blue-700">
-                {t('settings.save')}
-              </button>
-            </div>
-          </form>
-        </div>
-      </Modal>
+        </form>
+      </div>
+    </Modal>
     </div>
   );
 };
