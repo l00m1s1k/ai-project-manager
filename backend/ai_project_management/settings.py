@@ -32,7 +32,7 @@ INSTALLED_APPS = [
     'backend.ai_assistant'
 ]
 
-GEMINI_API_KEY = "AIzaSyB2ieGNM0QDiSzp2zx-P8f9QUbpFKpuSM0"
+GEMINI_API_KEY = "AIzaSyACteh2_HqC7Fsa9QV7TSmm8fSAHgaRIPU"
 
 
 MIDDLEWARE = [
