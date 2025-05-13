@@ -32,6 +32,9 @@ INSTALLED_APPS = [
     'backend.ai_assistant'
 ]
 
+GEMINI_API_KEY = "AIzaSyB2ieGNM0QDiSzp2zx-P8f9QUbpFKpuSM0"
+
+
 MIDDLEWARE = [
     'corsheaders.middleware.CorsMiddleware',
     'django.middleware.security.SecurityMiddleware',
