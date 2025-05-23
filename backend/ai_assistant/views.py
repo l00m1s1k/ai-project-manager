@@ -24,7 +24,6 @@ from rest_framework.views import APIView
 from rest_framework.parsers import MultiPartParser, FormParser
 from rest_framework_simplejwt.views import TokenObtainPairView
 from rest_framework_simplejwt.serializers import TokenObtainPairSerializer
-from rest_framework.decorators import api_view, permission_classes
 
 from .models import Profile, Task, Project, Feedback
 from .serializers import ProfileSerializer
@@ -60,16 +59,15 @@ def ai_help(request):
             if not task_text:
                 return JsonResponse({"error": "Запит порожній"}, status=400)
 
-                     try:
-                      response = model.generate_content(task_text)
-                       if not response.text:
-                         return JsonResponse({"error": "Порожня відповідь від AI"}, status=500)
-                        answer = response.text.strip()
-                         except Exception as e:
-                        if "quota" in str(e).lower():
+            try:
+                response = model.generate_content(task_text)
+                if not response.text:
+                    return JsonResponse({"error": "Порожня відповідь від AI"}, status=500)
+                answer = response.text.strip()
+            except Exception as e:
+                if "quota" in str(e).lower():
                     return JsonResponse({"error": "Досягнуто ліміт запитів до AI. Спробуйте через хвилину."}, status=429)
                 return JsonResponse({"error": f"Помилка AI: {str(e)}"}, status=500)
-            answer = response.text.strip()
 
             if request.user.is_authenticated:
                 Task.objects.create(user=request.user, title=task_text, ai_response=answer)
@@ -172,28 +170,6 @@ def register(request):
     Profile.objects.create(user=user)
     login(request, user)
     return JsonResponse({"message": "Реєстрація успішна", "username": user.username})
-
-
-#@csrf_exempt
-#@require_http_methods(["POST"])
-#def login_user(request):
-    #    data = json.loads(request.body)
-    #   username = data.get("username")
-    #   password = data.get("password")
-
-    #  user = authenticate(request, username=username, password=password)
-
-    # if user is not None:
-    #     login(request, user)
-    #      return JsonResponse({"message": "Успішний вхід", "username": user.username})
-    #  else:
-#      return JsonResponse({"error": "Невірні дані"}, status=401)
-
-#@csrf_exempt
-#@require_http_methods(["POST"])
-#def logout_user(request):
-    #   logout(request)
-#   return JsonResponse({"message": "Вихід виконано"})
 
 @csrf_exempt
 @require_http_methods(["POST"])
