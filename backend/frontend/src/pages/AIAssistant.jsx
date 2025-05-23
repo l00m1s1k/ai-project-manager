@@ -21,12 +21,17 @@ function AIAssistant() {
   const [editedTitle, setEditedTitle] = useState('');
   const [searchQuery, setSearchQuery] = useState('');
 
+  // Функція для отримання токена з localStorage
+  const getAuthToken = () => {
+    return localStorage.getItem('access_token');
+  };
+
   useEffect(() => {
-    fetch('https://ai-project-manager-4frq.onrender.com/api/ai-help/', {
-      credentials: 'include'
-    }).then(res => {
-      if (res.status === 401) navigate('/login');
-    });
+    // Перевіряємо авторизацію при завантаженні компонента
+    const token = getAuthToken();
+    if (!token) {
+      navigate('/login');
+    }
   }, [navigate]);
 
   useEffect(() => {
@@ -41,72 +46,138 @@ function AIAssistant() {
     if (!task.trim()) return;
     setLoading(true);
     setError('');
+    setResponse('');
+    
     try {
+      const token = getAuthToken();
+      if (!token) {
+        navigate('/login');
+        return;
+      }
+
       const res = await fetch('https://ai-project-manager-4frq.onrender.com/api/ai-help/', {
         method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
+        headers: { 
+          'Content-Type': 'application/json',
+          'Authorization': `Bearer ${token}`
+        },
         credentials: 'include',
         body: JSON.stringify({ task })
       });
 
-      const data = await res.json();
-
       if (res.status === 401) {
         setError('⛔ Ви не авторизовані. Увійдіть, щоб отримати відповідь від AI.');
-        setResponse('');
+        navigate('/login');
         return;
       }
 
+      if (res.status === 429) {
+        setError('⚠️ Досягнуто ліміт запитів. Спробуйте через хвилину.');
+        return;
+      }
+
+      const data = await res.json();
+
       if (res.ok) {
-        setResponse(data.response);
+        setResponse(data.response || data.answer);
         setTask('');
-        loadTasks();
+        await loadTasks();
       } else {
-        setResponse(data.error || 'Помилка відповіді від AI');
+        setError(data.error || 'Помилка відповіді від AI');
       }
     } catch (err) {
       console.error('AI error:', err);
-      setResponse('❌ Помилка з’єднання з AI');
+      setError('❌ Помилка з\'єднання з сервером');
     } finally {
       setLoading(false);
     }
   };
 
   const handleDelete = async (id) => {
-    await fetch(`https://ai-project-manager-4frq.onrender.com/api/tasks/${id}/`, {
-      method: 'DELETE',
-      credentials: 'include'
-    });
-    loadTasks();
-  };
-
-  const handleUpdate = async (id) => {
-    await fetch(`https://ai-project-manager-4frq.onrender.com/api/tasks/${id}/`, {
-      method: 'PATCH',
-      headers: { 'Content-Type': 'application/json' },
-      credentials: 'include',
-      body: JSON.stringify({ title: editedTitle })
-    });
-    setEditingId(null);
-    setEditedTitle('');
-    loadTasks();
-  };
-
-  const loadTasks = async () => {
     try {
-      const res = await fetch('https://ai-project-manager-4frq.onrender.com/api/tasks/', {
+      const token = getAuthToken();
+      if (!token) {
+        navigate('/login');
+        return;
+      }
+
+      const res = await fetch(`https://ai-project-manager-4frq.onrender.com/api/tasks/${id}/`, {
+        method: 'DELETE',
+        headers: {
+          'Authorization': `Bearer ${token}`
+        },
         credentials: 'include'
       });
 
       if (res.status === 401) {
-        setTasks([]);
+        navigate('/login');
+        return;
+      }
+
+      await loadTasks();
+    } catch (err) {
+      console.error('Delete error:', err);
+      setError('Помилка при видаленні задачі');
+    }
+  };
+
+  const handleUpdate = async (id) => {
+    try {
+      const token = getAuthToken();
+      if (!token) {
+        navigate('/login');
+        return;
+      }
+
+      const res = await fetch(`https://ai-project-manager-4frq.onrender.com/api/tasks/${id}/`, {
+        method: 'PATCH',
+        headers: { 
+          'Content-Type': 'application/json',
+          'Authorization': `Bearer ${token}`
+        },
+        credentials: 'include',
+        body: JSON.stringify({ title: editedTitle })
+      });
+
+      if (res.status === 401) {
+        navigate('/login');
+        return;
+      }
+
+      setEditingId(null);
+      setEditedTitle('');
+      await loadTasks();
+    } catch (err) {
+      console.error('Update error:', err);
+      setError('Помилка при оновленні задачі');
+    }
+  };
+
+  const loadTasks = async () => {
+    try {
+      const token = getAuthToken();
+      if (!token) {
+        navigate('/login');
+        return;
+      }
+
+      const res = await fetch('https://ai-project-manager-4frq.onrender.com/api/tasks/', {
+        headers: {
+          'Authorization': `Bearer ${token}`
+        },
+        credentials: 'include'
+      });
+
+      if (res.status === 401) {
+        navigate('/login');
         return;
       }
 
       const data = await res.json();
-      setTasks(data);
+      setTasks(data || []);
     } catch (err) {
       console.error('Помилка завантаження задач:', err);
+      setError('Помилка завантаження задач');
     }
   };
 
@@ -119,10 +190,10 @@ function AIAssistant() {
     const yesterday = new Date(Date.now() - 86400000).toISOString().slice(0, 10);
 
     return {
-      today: tasks.filter(task => task.created_at.slice(0, 10) === today),
-      yesterday: tasks.filter(task => task.created_at.slice(0, 10) === yesterday),
+      today: tasks.filter(task => task.created_at?.slice(0, 10) === today),
+      yesterday: tasks.filter(task => task.created_at?.slice(0, 10) === yesterday),
       older: tasks.filter(task =>
-        task.created_at.slice(0, 10) !== today && task.created_at.slice(0, 10) !== yesterday)
+        task.created_at?.slice(0, 10) !== today && task.created_at?.slice(0, 10) !== yesterday)
     };
   };
 
@@ -183,8 +254,8 @@ function AIAssistant() {
   );
 
   const filtered = tasks.filter((task) =>
-    task.title.toLowerCase().includes(searchQuery.toLowerCase()) ||
-    task.ai_response.toLowerCase().includes(searchQuery.toLowerCase())
+    task.title?.toLowerCase().includes(searchQuery.toLowerCase()) ||
+    task.ai_response?.toLowerCase().includes(searchQuery.toLowerCase())
   );
 
   const grouped = groupTasksByDate(filtered);
@@ -219,9 +290,10 @@ function AIAssistant() {
 
           <button
             onClick={handleSend}
-            className="bg-indigo-600 text-white font-semibold py-2 px-6 rounded-xl hover:bg-indigo-700 transition-all"
+            disabled={loading}
+            className={`bg-indigo-600 text-white font-semibold py-2 px-6 rounded-xl hover:bg-indigo-700 transition-all ${loading ? 'opacity-50 cursor-not-allowed' : ''}`}
           >
-            {t('ai.send')}
+            {loading ? t('ai.sending') : t('ai.send')}
           </button>
 
           {loading && <div className="text-sm text-gray-500">AI думає...</div>}
