@@ -60,7 +60,15 @@ def ai_help(request):
             if not task_text:
                 return JsonResponse({"error": "Запит порожній"}, status=400)
 
-            response = model.generate_content(task_text)
+                     try:
+                      response = model.generate_content(task_text)
+                       if not response.text:
+                         return JsonResponse({"error": "Порожня відповідь від AI"}, status=500)
+                        answer = response.text.strip()
+                         except Exception as e:
+                        if "quota" in str(e).lower():
+                    return JsonResponse({"error": "Досягнуто ліміт запитів до AI. Спробуйте через хвилину."}, status=429)
+                return JsonResponse({"error": f"Помилка AI: {str(e)}"}, status=500)
             answer = response.text.strip()
 
             if request.user.is_authenticated:
